@@ -222,6 +222,7 @@ Thread.prototype =
                     allPostsUsers = true;
                 if (phraseSet === null)
                     allPostsPhrases = true;
+
                 //For each of temp threads children
                 for (var i = 0;i < temp.getChildThreads().length; i++)
                 {
@@ -231,6 +232,15 @@ Thread.prototype =
                         //Is there no limit from the endDateTime field?
                         if (allPostsTime)
                         {
+                            /**
+                            *Example of how a userGroup data set looks
+                            *
+                            *  userGroup = [
+                            *     {user: 'John'},
+                            *     {user: 'Susan'}
+                            *  ];
+                            **/
+                            
                             //Is there no limit from the userGroup field?
                             if (allPostsUsers)
                             {
@@ -275,7 +285,7 @@ Thread.prototype =
              var flag = true;
                         
              /**
-              *Example of how a phraseSet object looks
+              *Example of how a phraseSet data set looks
               *
               *  phraseSet = [
               *     {phrase: 'example phrase'},
