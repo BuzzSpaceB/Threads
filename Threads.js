@@ -30,12 +30,11 @@ PostType =
  * @param _MimeType - Describes what type of content the post consist of.
  * @constructor
  */
-function Post (_PostType, _Heading, _Content, _DateTime, _MimeType)
+function Post (_ID, _PostType, _Heading, _Content, _DateTime, _MimeType)
 {
     /*
         A post will have its own heading for the content it contains.
         This is in addition to the thread heading/description.
-
        |Thread              |
        ||=================| |
        ||Post Heading     | |
@@ -45,7 +44,8 @@ function Post (_PostType, _Heading, _Content, _DateTime, _MimeType)
        ||                 | |
        ||_________________| |
      */
-    this.mPostHeading = _Heading;
+	this.mID = _ID;
+ 	this.mPostHeading = _Heading;
 	this.mPostType = _PostType;
 	this.mContent = _Content;
 	this.mDateTime = _DateTime;
@@ -72,8 +72,9 @@ Post.prototype =
  * @param _MimeType - Describes what type of content the post consist of.
  * @constructor
  */
-function Thread (_User, _Parent, _Level, _PostType, _Heading, _Content, _DateTime, _MimeType)
+function Thread (_ID, _User, _Parent, _Level, _PostType, _Heading, _Content, _DateTime, _MimeType)
 {
+	this.mID = _ID;
 	this.mUser = _User;
 	this.mParent = _Parent;
 	this.mPost = new Post(_PostType, _Heading, _Content, _DateTime, _MimeType);
@@ -103,28 +104,57 @@ Thread.prototype =
 	{
 		return this.mParent;
 	},
+	
+	unfreeze: function ()
+	{
+		if (this.mChildren.length >= 1) {
+			for (var i = 0; i < this.mChildren.length; i++) {
+			    this.mChildren[i].unfreeze();
+			}
+		}
+		var thread = new Thread(this.mID, this.mUser, this.mParent, this.mLevel, this.mPostType, this.mHeading, this.mContent, this.mDateTime, this.mMimeType);
+	        this = thread;
+	        this.mStatus = Status.Open;
+	},
 
 	closeThread: function ()
 	{
 		//Martha
-        if(isAdministrator() === true)
-        {
-            this.getPost().style.visibility = "hidden";
-            if(this.mChildren.length >= 1)
-            {
-                for(var i = 0; i < mChildren.length;i++) {
-                    this.seal(mChildren[i]);
+	        if(isAdministrator() === true)
+	        {
+		    this.closeChildren();
+	            //create thread summary
+	            if(Object.isFrozen(this) === true)
+	            {
+	                this.createThreadSummary();
+	            }
+	        }
+	        else
+	        {
+	            alert('You are not authorized to close this thread');
+	        }
+	},
+	
+	createThreadSummary: function()
+	{
+		var summary = new ThreadSummary(this.mMimeType, this.mContent, this.mDateTime, this);
+		var index = this.mParent.mChildren.indexOf(this);
+		if(index !== -1) {
+		    this.mParent.mChildren[index] = summary;
+		}
+		return summary.toString();
+	},
+	
+	closeChiildren: function ()
+	{
+	    //checks if this thread has childThreads and prevent them from modification and adding other properties
+            if (this.mChildren.length >= 1) {
+                for (var i = 0; i < this.mChildren.length; i++) {
+                    this.mChildren[i].closeChildren(); //prevents modification
                 }
             }
-            this.seal(this);
-            this.mStatus = Status.Closed;
-            var summary = new ThreadSummary();
-            return summary.toString();
-        }
-        else
-        {
-            alert('You are not authorized to close the thread');
-        }
+            Object.freeze(this); //prevents modification of the current thread
+            this.mStatus = Status.Closed;	
 	},
 
         /**
@@ -153,6 +183,27 @@ Thread.prototype =
                     //Assign newParent's status to this thread (e.g. current thread is open, if it is moved to be the child of a thread which is closed then the current thread will also become closed
                     this.mStatus = newParent.mStatus;
                     
+                    if(newParent.mStatus !== this.mStatus)
+                    {
+                    	if(newParent.mStatus === Status.Open)
+                    	{
+                    		if(this.mStatus === Status.Closed)
+                    			this.reopenThread();
+                    		else if (this.mStatus === Status.Hidden)
+                    			this.unhideThread();
+                    	}
+                    	else if (newParent.mStatus === Status.Closed)
+                    	{
+                    		this.closeThread();
+                    	}
+                    	else if (newParent.mStatus === Status.Hidden)
+                    	{
+                    		if (this.mStatus === Status.Closed)
+                    			this.reopenThread();
+                    		this.hideThread();
+                    	}
+                    }
+                    
                     //The thread was successfully moved
                     return true;
                 }
@@ -178,7 +229,7 @@ Thread.prototype =
         * @param userGroup - Restricts returned posts to be limited to a specific user group.
         * @param phraseSet - Restrict returned posts to be only posts that contains all the strings specified in the phrase set. The default is an empty set. If the set is empty all posts are returned.
         **/
-	queryThread: function (startDateTime, endDateTime, maxLevel, minLevel,userGroup, phraseSet)
+	queryThread: function (startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
 	{
 		//Herman
                 
@@ -300,7 +351,7 @@ Thread.prototype =
                 for(var i in phraseSet)
                 {
                     //Compare each phrase in the phraseSet to the current thread's content
-                    if((temp.getPost().mContent.indexOf(phraseSet[i]) > -1))
+                    if((temp.getPost().mContent.indexOf(phraseSet[i]) === -1))
                     {
                         //If a phrase is not found in the current thread's content then set the flag to false.
                         flag = false;
@@ -336,32 +387,30 @@ Thread.prototype =
 	hideThread: function ()
 	{
 		//Sbo
-        this.getPost().style.visibility = 'hidden';
 
-        if(this.getChildThreads().length >= 1)
-        {
-            for(var i = 0; i < this.mChildren.length ; i += 1)
-            {
-                this.mChildren[i].style.visibility = 'hidden';
-            }
-        }
-        this.mStatus = Status.Hidden;
+	        if(this.getChildThreads().length >= 1)
+	        {
+	            for(var i = 0; i < this.mChildren.length ; i += 1)
+	            {
+	                this.mChildren[i].hideThread();
+	            }
+	        }
+	        this.mStatus = Status.Hidden;
 
 	},
 
 	unhideThread: function ()
 	{
 		//Sbo
-        this.getPost().style.visibility = 'visible';
-
-        if(this.getChildThreads().length >= 1)
-        {
-            for(var i = 0; i < this.mChildren.length ; i++)
-            {
-                this.mChildren[i].style.visibility = 'visible';
-            }
-        }
-        this.mStatus = Status.Open;
+	
+	        if(this.getChildThreads().length >= 1)
+	        {
+	            for(var i = 0; i < this.mChildren.length ; i++)
+	            {
+	                this.mChildren[i].unhideThread();
+	            }
+	        }
+	        this.mStatus = Status.Open;
 	},
 
 	markPostAsRead: function ()
@@ -397,17 +446,16 @@ ThreadSummary.prototype =
 	reopenThread: function ()
 	{
 		//Martha
-        //not finished yet
-        Thread.prototype = Thread;
-        if(Thread.close())
-        {
-            Thread.open();
-            Thread.getChildThreads.open();
-
-
-
-        }
-        this.mStatus = Status.Open;
-        alert(mStatus.toString());
+	        if(isAdministrator === true) {
+	            //checks if the thread is still inaccessible
+	            if(Object.isFrozen(this.mThread) === true) {
+	                //reopens the current thread
+	                this.mThread.unfreeze();
+	            }
+	        }
+	        else
+	        {
+	            alert("You are not authorized to open this thread");
+	        }
 	}
 };
