@@ -95,6 +95,22 @@ Thread.prototype =
 		return this.mChildren;
 	},
 
+    /**
+     * Creates a new thread as a child of the current thread.
+     * @param _ID - The unique identification for the new thread.
+     * @param _User - The user who created the thread.
+     * @param _PostType - Describes the what the type of post is.
+     * @param _Heading - The heading of a post in the new thread.
+     * @param _Content - The text content of the post in the new thread.
+     * @param _MimeType - Describes the content syntax of the new post content.
+     */
+    submitPost: function (_ID, _User, _PostType, _Heading, _Content, _MimeType){
+        //Jason
+        var dateCreated = new Date();
+        var childThread = new Thread(_ID, _User, this, (this.mLevel + 1), _PostType, _Heading, _Content, dateCreated, _MimeType);
+        this.mChildren.push(childThread);
+    },
+
 	getPost: function ()
 	{
 		return this.mPost;
@@ -113,8 +129,8 @@ Thread.prototype =
 			}
 		}
 		var thread = new Thread(this.mID, this.mUser, this.mParent, this.mLevel, this.mPostType, this.mHeading, this.mContent, this.mDateTime, this.mMimeType);
-	        this = thread;
-	        this.mStatus = Status.Open;
+        this.mThread = thread;
+        this.mStatus = Status.Open;
 	},
 
 	closeThread: function ()
@@ -418,10 +434,37 @@ Thread.prototype =
 		//Sbo
 	},
 
+    /**
+     * Counts the number of thread children that resides beneath our current thread.
+     * @returns {number}
+     */
 	countDescendants: function ()
 	{
-		//Jason
-	}
+        //Jason
+		var counter = 0;
+        var k = 0;
+
+        for (k; k < (this.mChildren.length); k++){
+            ++counter;
+            counter += countChildren(this.mChildren[k]);
+        }
+        return counter;
+	},
+
+    /**
+     * A simple recursive function to count the children in a tree structure.
+     * @param _Node - A thread node of which we want to count children from.
+     * @returns {number}
+     */
+    countChildren: function (_Node){
+        //Jason
+        var extraCount = 0;
+        for (var i = 0; i < _Node.mChildren.length; i++){
+            ++extraCount; //Counts the current node as child
+            extraCount += _Node.countChildren(_Node.mChildren[i]);
+        }
+        return extraCount;
+    }
 };
 
 /**
