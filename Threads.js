@@ -32,7 +32,7 @@ PostType =
  */
 function Post (_ID, _PostType, _Heading, _Content, _DateTime, _MimeType)
 {
-    /*
+    /**
         A post will have its own heading for the content it contains.
         This is in addition to the thread heading/description.
        |Thread              |
@@ -50,6 +50,10 @@ function Post (_ID, _PostType, _Heading, _Content, _DateTime, _MimeType)
 	this.mContent = _Content;
 	this.mDateTime = _DateTime;
 	this.mMimeType = _MimeType;
+    /*
+    Still needs to be done:
+        1. Adding persistence using mongoose for MongoDB.
+     */
 }
 
 /**
@@ -237,14 +241,14 @@ Thread.prototype =
             }
 	},
 
-        /**
-        * @param startDateTime -  Restrict returned posts to be after this time stamp. Default is the time stamp of the root post in the Buzz space.
-        * @param endDateTime -  Restrict returned posts to be before this time stamp. If unspecified all posts are returned.
-        * @param maxLevel - Restrict returned posts to be at most at the specified depth relative to the post. If this value is 0, minLevel will also be 0 only the specified post is returned.
-        * @param minLevel - Restrict returned posts to be at least at the specified depth relative to the post. Obviously it has to be less or equal to maxLevel. If both minLevel and maxLevel is 1, only the immediate children are retirieved.
-        * @param userGroup - Restricts returned posts to be limited to a specific user group.
-        * @param phraseSet - Restrict returned posts to be only posts that contains all the strings specified in the phrase set. The default is an empty set. If the set is empty all posts are returned.
-        **/
+    /**
+    * @param startDateTime -  Restrict returned posts to be after this time stamp. Default is the time stamp of the root post in the Buzz space.
+    * @param endDateTime -  Restrict returned posts to be before this time stamp. If unspecified all posts are returned.
+    * @param maxLevel - Restrict returned posts to be at most at the specified depth relative to the post. If this value is 0, minLevel will also be 0 only the specified post is returned.
+    * @param minLevel - Restrict returned posts to be at least at the specified depth relative to the post. Obviously it has to be less or equal to maxLevel. If both minLevel and maxLevel is 1, only the immediate children are retirieved.
+    * @param userGroup - Restricts returned posts to be limited to a specific user group.
+    * @param phraseSet - Restrict returned posts to be only posts that contains all the strings specified in the phrase set. The default is an empty set. If the set is empty all posts are returned.
+    **/
 	queryThread: function (startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
 	{
 		//Herman
