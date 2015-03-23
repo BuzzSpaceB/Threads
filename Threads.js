@@ -128,7 +128,7 @@ Thread.prototype =
 			    this.mChildren[i].unfreeze();
 			}
 		}
-		var thread = new Thread(this.mID, this.mUser, this.mParent, this.mLevel, this.mPostType, this.mHeading, this.mContent, this.mDateTime, this.mMimeType);
+	var thread = new Thread(this.mID, this.mUser, this.mParent, this.mLevel, this.mPostType, this.mHeading, this.mContent, this.mDateTime, this.mMimeType);
         this.mThread = thread;
         this.mStatus = Status.Open;
 	},
@@ -139,7 +139,7 @@ Thread.prototype =
 	        if(isAdministrator() === true)
 	        {
 		    this.closeChildren();
-	            //create thread summary
+	            //creates thread summary
 	            if(Object.isFrozen(this) === true)
 	            {
 	                this.createThreadSummary();
@@ -161,7 +161,7 @@ Thread.prototype =
 		return summary.toString();
 	},
 	
-	closeChiildren: function ()
+	closeChildren: function ()
 	{
 	    //checks if this thread has childThreads and prevent them from modification and adding other properties
             if (this.mChildren.length >= 1) {
