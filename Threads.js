@@ -81,7 +81,7 @@ function Thread (_ID, _User, _Parent, _Level, _PostType, _Heading, _Content, _Da
 	this.mID = _ID;
 	this.mUser = _User;
 	this.mParent = _Parent;
-	this.mPost = new Post(_PostType, _Heading, _Content, _DateTime, _MimeType);
+	this.mPost = new Post(_ID, _PostType, _Heading, _Content, _DateTime, _MimeType);
 	this.mChildren = [];
 	this.mStatus = Status.Open;
         this.mLevel = _Level;
@@ -506,3 +506,29 @@ ThreadSummary.prototype =
 	        }
 	}
 };
+
+
+/**
+ Unit Testing of our Thread Module.
+ */
+
+exports.CreationOfThreads = {
+    Test1: function(test){
+        var myObject = new Thread(0, "Jason", 0, 0, "Question", "Test1", "This is a test", "Today", "Text");
+        var returnedObject = myObject.getPost();
+        /**
+         * The following line of code is called an Assertion. It is the "TEST" being performed.
+         */
+        test.equal(returnedObject.mPostHeading, "Test1", "This should pass.");
+        test.done();
+    },
+
+    Test2: function(test){
+        var myObject = new Thread(0, "Jason", 0, 0, "Question", "Test2", "Content Tester", "Yesterday", "Text");
+        var returnedObject = myObject.getPost();
+        test.equal(returnedObject.mPostHeading, "Test2", "This should pass.");
+        test.equal(returnedObject.mContent, "Content Tester", "This should pass.");
+        test.equal(returnedObject.mMimeType, "Text", "This should pass.");
+        test.done();
+    }
+}
