@@ -1,0 +1,5 @@
+* 26 March 12:00 (AM) - All the core functionality done and finalized, node.js modules+packages, unit tests
+
+* 27 March 14:45 (PM) - Demo meeting
+
+* 3 April 23:59 (PM) - EVERYTHING to be completed, all the nice-to-haves etc.
