@@ -50,39 +50,12 @@ function Post (_ID, _PostType, _Heading, _Content, _DateTime, _MimeType)
 	this.mContent = _Content;
 	this.mDateTime = _DateTime;
 	this.mMimeType = _MimeType;
-    /*
-    Still needs to be done:
-        1. Adding persistence using mongoose for MongoDB.
-     */
-    var connected = false;
-    var mongoose = require("mongoose");
-    mongoose.connect('mongodb://localhost/test');
 
-    //Testing valid connection to database.
-    var database = mongoose.connection;
-    if (database != null){
-        connected = true;
-    }
+    var mongoose = require('mongoose');
+    var Schema = mongoose.Schema;
+    var ObjectID = Schema.ObjectId;
 
-    if (connected == true){
-        //Connection to database succeeded -> continue;
-        //A database model needs to be imported. So if possible, the file that created the database needs to export
-        //the model so that this class can use it. "dbconfig" was used here only as a temporary fix.
-
-        var file = require("./dbconfig");
-        var Restriction = file.restrict;
-
-        (this).save(function(err, Thread.getPost()){
-            /**
-             * This is getting errors, I am not yet familiar with the Mongoose API...
-             */
-            if (err) return console.error(err);
-            console.dir(this);
-        });
-    }
-    else{
-        console.log("Database Error: Could not connect to the database from Post in Threads.");
-    }
+    require('./Persistence.js').doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeType);
 }
 
 /**
