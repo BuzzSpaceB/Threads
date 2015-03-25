@@ -50,10 +50,12 @@ function Post (_ID, _PostType, _Heading, _Content, _DateTime, _MimeType)
 	this.mContent = _Content;
 	this.mDateTime = _DateTime;
 	this.mMimeType = _MimeType;
-    /*
-    Still needs to be done:
-        1. Adding persistence using mongoose for MongoDB.
-     */
+
+    var mongoose = require('mongoose');
+    var Schema = mongoose.Schema;
+    var ObjectID = Schema.ObjectId;
+
+    require('./Persistence.js').doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeType);
 }
 
 /**
