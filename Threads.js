@@ -625,6 +625,8 @@ exports.CreationOfThreads = {
          * equal(currentValue, expectedValue, AssertionMessage);
          */
         test.equal(Obj.mStatus, "Closed", "Failure to close a thread.");
+        Obj.submitPost(32, "Jason", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
+        test.equal(Obj.mChildren[0].mStatus, "Closed", "Failure to close child threads.");
         test.done();
 
     },
