@@ -160,6 +160,7 @@ Thread.prototype =
 		//Martha
 	        if(isAdministrator() === true)
 	        {
+                console.log('closing thread');
 		    this.closeChildren();
 	            //creates thread summary
 	            if(Object.isFrozen(this) === true)
@@ -176,7 +177,7 @@ Thread.prototype =
 	createThreadSummary: function()
 	{
 		var summary = new ThreadSummary(this.mMimeType, this.mContent, this.mDateTime, this);
-		var index = this.mParent.mChildren.indexOf(this);
+		var index = this.mChildren.indexOf(this);
 		if(index !== -1) {
 		    this.mParent.mChildren[index] = summary;
 		}
@@ -578,7 +579,8 @@ exports.CreationOfThreads = {
         var myObject1 = new Thread(0, "Herman", null, 2, "Question", "Test4.1", "Query test 1", 2, "Text");
 	var myObject2 = new Thread(0, "Herman", null, 2, "Question", "Test4.2", "Query test 2", 3, "Text");
 	var myObject3 = new Thread(0, "Piet", null, 2, "Question", "Test4.3", "Query test 3", 4, "Text");
-        //var myObject2 = new Thread(_ID, _User, _Parent, _Level, _PostType, _Heading, _Content, _DateTime, _MimeType)
+        //var myObject2 = new Thread(_ID, _User, _Parent, _Level, _PostType, _Heading, _Content, _DateTime,
+        // _MimeType)
         //(startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
   
 	myObject2.moveThread(myObject1);
@@ -605,6 +607,24 @@ exports.CreationOfThreads = {
 	test.equal(returnedObject5[1].Content, "Query test", "This should pass5.2");
 	test.equal(returnedObject5[2].Content, "Query test", "This should pass5.3");
         test.done();
+    },
+
+    //test of closeThread()
+
+    Test5: function(test)
+    {
+        var Obj = new Thread(0, "Martha", null, 2, "Question", "Test5", "Query test 1", 2, "Text");
+        test.equal(Obj.closeThread(), "Test5", "This should pass.");
+        test.done();
+
+    },
+    //test of reopenThread()
+    Test6: function(test)
+    {
+        var Obj = new Thread(0, "Martha", null, 2, "Question", "Test6", "Query test 1", 2, "Text");
+        test.equal(Obj.reopenThread(), "Test6", "This should pass.");
+        test.done();
+
     }
 }
-//test;
+
