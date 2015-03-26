@@ -565,32 +565,36 @@ exports.CreationOfThreads = {
     },
     //Test of moveThread()
     Test3: function(test){
-        var myObject1 = new Thread(0, "Herman", 0, 0, "Question", "Test3", "Move test", "Today", "Text");
-        var myObject2 = new Thread(1, "Herman", 0, 0, "Question", "Test3.1", "New parent", "Today", "Text");
-        myObject1.moveThread(myObject2);
-        var returnedObject1 = myObject1.getParentThread().getPost();
-        var returnedObject2 = myObject2.mChildren[0].getPost();
+        var myObject1 = new Thread(0, "Herman", 0, 0, "Question", "Test3.1", "Move test", "Today", "Text");
+        var myObject2 = new Thread(1, "Herman", 0, 0, "Question", "Test3.2", "New parent", "Today", "Text");
+        myObject2.submitPost(2, "Herman", "Question", "Test3.3", "Thread to move", "Text");
+        var childObject = myObject2.mChildren[0];
+        childObject.moveThread(myObject1);
+        var returnedObject1 = childObject.getParentThread().getPost();
+        var returnedObject2 = myObject1.mChildren[0].getPost();
         test.equal(returnedObject1.mPostHeading, "Test3.1", "This should pass1.");
-        test.equal(returnedObject2.mPostHeading, "Test3", "This should pass2.");
+        test.equal(returnedObject2.mPostHeading, "Test3.3", "This should pass2.");
         test.done();
     },
     //Test of queryThread()
     Test4: function(test){
-        var myObject1 = new Thread(0, "Herman", null, 2, "Question", "Test4.1", "Query test 1", 2, "Text");
-	var myObject2 = new Thread(0, "Herman", null, 2, "Question", "Test4.2", "Query test 2", 3, "Text");
-	var myObject3 = new Thread(0, "Piet", null, 2, "Question", "Test4.3", "Query test 3", 4, "Text");
+        var date1 = new Date();
+        var date2 = new Date();
+        var date3 = new Date();
+        
+        var myObject1 = new Thread(0, "Herman", 0, 2, "Question", "Test4.1", "Query test 1", date2, "Text");
         //var myObject2 = new Thread(_ID, _User, _Parent, _Level, _PostType, _Heading, _Content, _DateTime,
         // _MimeType)
         //(startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
-  
-	myObject2.moveThread(myObject1);
-	myObject3.moveThread(myObject2);
+        
+        myObject1.submitPost(1, "Herman", "Question", "Test4.2", "Query test 2", "Text");
+        myObject1.submitPost(2, "Herman", "Question", "Test4.3", "Query test 3", "Text");
 	    
         var userGroup = [{user: "Herman"}];
         var phraseSet = [{phrase: "Query"}];
         
         var returnedObject1 = myObject1.queryThread(0,0,0,0,0,0);
-        var returnedObject2 = myObject1.queryThread(1,3,0,0,0,0);
+        var returnedObject2 = myObject1.queryThread(date1,date3,0,0,0,0);
         var returnedObject3 = myObject1.queryThread(0,0,3,1,0,0);
         var returnedObject4 = myObject1.queryThread(0,0,0,0,userGroup,0);
         var returnedObject5 = myObject1.queryThread(0,0,0,0,0,phraseSet);
