@@ -575,24 +575,35 @@ exports.CreationOfThreads = {
     },
     //Test of queryThread()
     Test4: function(test){
-        var myObject = new Thread(0, "Herman", null, 2, "Question", "Test4", "Query test", 2, "Text");
+        var myObject1 = new Thread(0, "Herman", null, 2, "Question", "Test4.1", "Query test 1", 2, "Text");
+	var myObject2 = new Thread(0, "Herman", null, 2, "Question", "Test4.2", "Query test 2", 3, "Text");
+	var myObject3 = new Thread(0, "Piet", null, 2, "Question", "Test4.3", "Query test 3", 4, "Text");
         //var myObject2 = new Thread(_ID, _User, _Parent, _Level, _PostType, _Heading, _Content, _DateTime, _MimeType)
         //(startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
   
+	myObject2.moveThread(myObject1);
+	myObject3.moveThread(myObject2);
+	    
         var userGroup = [{user: "Herman"}];
         var phraseSet = [{phrase: "Query"}];
         
-        var returnedObject1 = myObject.queryThread(0,0,0,0,0,0);
-        var returnedObject2 = myObject.queryThread(1,3,0,0,0,0);
-        var returnedObject3 = myObject.queryThread(0,0,3,1,0,0);
-        var returnedObject4 = myObject.queryThread(0,0,0,0,userGroup,0);
-        var returnedObject5 = myObject.queryThread(0,0,0,0,0,phraseSet);
+        var returnedObject1 = myObject1.queryThread(0,0,0,0,0,0);
+        var returnedObject2 = myObject1.queryThread(1,3,0,0,0,0);
+        var returnedObject3 = myObject1.queryThread(0,0,3,1,0,0);
+        var returnedObject4 = myObject1.queryThread(0,0,0,0,userGroup,0);
+        var returnedObject5 = myObject1.queryThread(0,0,0,0,0,phraseSet);
         
-        test.equal(returnedObject1[0].Content, "Query test", "This should pass1.");
-        test.equal(returnedObject2[0].Content, "Query test", "This should pass2.");
-        test.equal(returnedObject3[0].Content, "Query test", "This should pass3.");
-        test.equal(returnedObject4[0].Content, "Query test", "This should pass4.");
-        test.equal(returnedObject5[0].Content, "Query test", "This should pass5.");
+        test.equal(returnedObject1[0].Content, "Query test", "This should pass1.1");
+	test.equal(returnedObject1[1].Content, "Query test", "This should pass1.2");
+	test.equal(returnedObject1[2].Content, "Query test", "This should pass1.3");
+	test.equal(returnedObject1[0].Content, "Query test", "This should pass1");
+        test.equal(returnedObject2[0].Content, "Query test", "This should pass2");
+        test.equal(returnedObject3[0].Content, "Query test", "This should pass3");
+        test.equal(returnedObject4[0].Content, "Query test", "This should pass4.1");
+	test.equal(returnedObject4[1].Content, "Query test", "This should pass4.2");
+        test.equal(returnedObject5[0].Content, "Query test", "This should pass5.1");
+	test.equal(returnedObject5[1].Content, "Query test", "This should pass5.2");
+	test.equal(returnedObject5[2].Content, "Query test", "This should pass5.3");
         test.done();
     }
 }
