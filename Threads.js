@@ -161,7 +161,8 @@ Thread.prototype =
 	        if(isAdministrator() === true)
 	        {
                 console.log('closing thread');
-		    this.closeChildren();
+                this.mStatus = Status.Closed;
+		        this.closeChildren();
 	            //creates thread summary
 	            if(Object.isFrozen(this) === true)
 	            {
@@ -600,16 +601,16 @@ exports.CreationOfThreads = {
         var returnedObject5 = myObject1.queryThread(0,0,0,0,0,phraseSet);
         
         test.equal(returnedObject1[0].Content, "Query test", "This should pass1.1");
-	test.equal(returnedObject1[1].Content, "Query test", "This should pass1.2");
-	test.equal(returnedObject1[2].Content, "Query test", "This should pass1.3");
-	test.equal(returnedObject1[0].Content, "Query test", "This should pass1");
+	    test.equal(returnedObject1[1].Content, "Query test", "This should pass1.2");
+	    test.equal(returnedObject1[2].Content, "Query test", "This should pass1.3");
+	    test.equal(returnedObject1[0].Content, "Query test", "This should pass1");
         test.equal(returnedObject2[0].Content, "Query test", "This should pass2");
         test.equal(returnedObject3[0].Content, "Query test", "This should pass3");
         test.equal(returnedObject4[0].Content, "Query test", "This should pass4.1");
-	test.equal(returnedObject4[1].Content, "Query test", "This should pass4.2");
+	    test.equal(returnedObject4[1].Content, "Query test", "This should pass4.2");
         test.equal(returnedObject5[0].Content, "Query test", "This should pass5.1");
-	test.equal(returnedObject5[1].Content, "Query test", "This should pass5.2");
-	test.equal(returnedObject5[2].Content, "Query test", "This should pass5.3");
+	    test.equal(returnedObject5[1].Content, "Query test", "This should pass5.2");
+	    test.equal(returnedObject5[2].Content, "Query test", "This should pass5.3");
         test.done();
     },
 
@@ -617,18 +618,25 @@ exports.CreationOfThreads = {
 
     Test5: function(test)
     {
-        var Obj = new Thread(0, "Martha", null, 2, "Question", "Test5", "Query test 1", 2, "Text");
-        test.equal(Obj.closeThread(), "Test5", "This should pass.");
+        var Obj = new Thread(0, "Martha", 0, 2, "Question", "Test5", "Query test 1", 2, "Text");
+        Obj.closeThread();
+        /**
+         * The Equal test function.
+         * equal(currentValue, expectedValue, AssertionMessage);
+         */
+        test.equal(Obj.mStatus, "Closed", "Failure to close a thread.");
         test.done();
 
     },
     //test of reopenThread()
     Test6: function(test)
     {
-        var Obj = new Thread(0, "Martha", null, 2, "Question", "Test6", "Query test 1", 2, "Text");
-        test.equal(Obj.reopenThread(), "Test6", "This should pass.");
+        var Obj = new Thread(0, "Martha", 0, 2, "Question", "Test6", "Query test 1", 2, "Text");
+        Obj.closeThread(); //Closing only to test reopening functionality
+        test.equal(Obj.mStatus, "Closed", "Failed to close the thread to reopen.");
+        var newObj = Obj.reopenThread();
+        test.equal(newObj.mStatus, "Open", "Failed to reopen the thread.");
         test.done();
-
     }
 }
 
