@@ -302,7 +302,18 @@ Thread.prototype =
             //Call the recursive extension of this function to traverse the children of this thread
             return queryThreadRecursive(answer, temp, count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
 	},
-        
+
+        /**
+         * @param answer - The array in which the answer will be stored in.
+         * @param temp - The passes thread currently being tested.
+         * @param count - A counter used to keep track of the depth of the tree in relation to the starting thread.
+         * @param startDateTime -  Restrict returned posts to be after this time stamp. Default is the time stamp of the root post in the Buzz space.
+         * @param endDateTime -  Restrict returned posts to be before this time stamp. If unspecified all posts are returned.
+         * @param maxLevel - Restrict returned posts to be at most at the specified depth relative to the post. If this value is 0, minLevel will also be 0 only the specified post is returned.
+         * @param minLevel - Restrict returned posts to be at least at the specified depth relative to the post. Obviously it has to be less or equal to maxLevel. If both minLevel and maxLevel is 1, only the immediate children are retirieved.
+         * @param userGroup - Restricts returned posts to be limited to a specific user group.
+         * @param phraseSet - Restrict returned posts to be only posts that contains all the strings specified in the phrase set. The default is an empty set. If the set is empty all posts are returned.
+         **/
         queryThreadRecursive: function (answer, temp, count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
 	{
 		//Herman
@@ -382,7 +393,13 @@ Thread.prototype =
                 return answer;
             }
 	},
-        
+
+        /**
+         * @param answer - The array in which the answer will be stored in.
+         * @param temp - The passes thread currently being tested.
+         * @param phraseSet - Restrict returned posts to be only posts that contains all the strings specified in the phrase set. The default is an empty set. If the set is empty all posts are returned.
+         * @param allPostsPhrases - A flag to indicate whether there are any phrases for which the query must search.
+         **/
         addToQueryAnswer: function (answer, temp, phraseSet, allPostsPhrases)
         {
              //Variable to help check if the phrases contained in phraseSet all appear in the current thread's content
@@ -573,8 +590,8 @@ exports.CreationOfThreads = {
         childObject.moveThread(myObject1);
         var returnedObject1 = childObject.getParentThread().getPost();
         var returnedObject2 = myObject1.mChildren[0].getPost();
-        test.equal(returnedObject1.mPostHeading, "Test3.1", "This should pass1.");
-        test.equal(returnedObject2.mPostHeading, "Test3.3", "This should pass2.");
+        test.equal(returnedObject1.mPostHeading, "Test3.1", "Move threads test 1.");
+        test.equal(returnedObject2.mPostHeading, "Test3.3", "Move threads test 2.");
         test.done();
     },
     //Test of queryThread()
@@ -600,17 +617,17 @@ exports.CreationOfThreads = {
         var returnedObject4 = myObject1.queryThread(0,0,0,0,userGroup,0);
         var returnedObject5 = myObject1.queryThread(0,0,0,0,0,phraseSet);
         
-        test.equal(returnedObject1[0].Content, "Query test", "This should pass1.1");
-	    test.equal(returnedObject1[1].Content, "Query test", "This should pass1.2");
-	    test.equal(returnedObject1[2].Content, "Query test", "This should pass1.3");
-	    test.equal(returnedObject1[0].Content, "Query test", "This should pass1");
-        test.equal(returnedObject2[0].Content, "Query test", "This should pass2");
-        test.equal(returnedObject3[0].Content, "Query test", "This should pass3");
-        test.equal(returnedObject4[0].Content, "Query test", "This should pass4.1");
-	    test.equal(returnedObject4[1].Content, "Query test", "This should pass4.2");
-        test.equal(returnedObject5[0].Content, "Query test", "This should pass5.1");
-	    test.equal(returnedObject5[1].Content, "Query test", "This should pass5.2");
-	    test.equal(returnedObject5[2].Content, "Query test", "This should pass5.3");
+        test.equal(returnedObject1[0].Content, "Query test", "Query threads test 1.1");
+	    test.equal(returnedObject1[1].Content, "Query test", "Query threads test 1.2");
+	    test.equal(returnedObject1[2].Content, "Query test", "Query threads test 1.3");
+	    test.equal(returnedObject1[0].Content, "Query test", "Query threads test 1");
+        test.equal(returnedObject2[0].Content, "Query test", "Query threads test 2");
+        test.equal(returnedObject3[0].Content, "Query test", "Query threads test 3");
+        test.equal(returnedObject4[0].Content, "Query test", "Query threads test 4.1");
+	    test.equal(returnedObject4[1].Content, "Query test", "Query threads test 4.2");
+        test.equal(returnedObject5[0].Content, "Query test", "Query threads test 5.1");
+	    test.equal(returnedObject5[1].Content, "Query test", "Query threads test 5.2");
+	    test.equal(returnedObject5[2].Content, "Query test", "Query threads test 5.3");
         test.done();
     },
 
