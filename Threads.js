@@ -66,6 +66,11 @@ Post.prototype =
 	constructor: Post
 };
 
+function isAdministrator ()
+{
+    return true;
+}
+
 /**
  * The Constructor for a Thread object. It initializes a thread and a post within that thread. There exist a one-to-one relationship between a thread and a post.
  * @param _User - Identifies who created/initiated the thread.
@@ -126,7 +131,18 @@ Thread.prototype =
 	{
 		return this.mParent;
 	},
-	
+        
+        getRoot: function ()
+        {
+            if (this.mParent !== null) {
+		this.mParent.getRoot();
+            }
+            else
+            {
+                return this;
+            }
+        },
+        
 	unfreeze: function ()
 	{
 		if (this.mChildren.length >= 1) {
@@ -179,6 +195,17 @@ Thread.prototype =
             this.mStatus = Status.Closed;	
 	},
 
+        setLevels: function()
+        {
+            //traverses this thread's children
+            if (this.mChildren.length >= 1) {
+                for (var i = 0; i < this.mChildren.length; i++) {
+                    this.mChildren[i].setLevels();
+                }
+            }
+            this.mLevel = this.getParentThread().mLevel + 1; //sets this thread's level to one more than its parents level
+        },
+
         /**
         * @param newParent - Describes which thread will be the current thread's new parent (i.e. the thread the current thread will attach to). If it is null the thread will not move.
         **/
@@ -205,6 +232,7 @@ Thread.prototype =
                     //Assign newParent's status to this thread (e.g. current thread is open, if it is moved to be the child of a thread which is closed then the current thread will also become closed
                     this.mStatus = newParent.mStatus;
                     
+                    //Assign newParent's status to this thread's children and their children, etc.
                     if(newParent.mStatus !== this.mStatus)
                     {
                     	if(newParent.mStatus === Status.Open)
@@ -225,6 +253,7 @@ Thread.prototype =
                     		this.hideThread();
                     	}
                     }
+                    this.setLevels();
                     
                     //The thread was successfully moved
                     return true;
@@ -284,16 +313,16 @@ Thread.prototype =
                 var allPostsPhrases = false;
                        
                 //If no startDateTime value is supplied the default value is set to the root thread's DateTime
-                if (startDateTime === null)
+                if (startDateTime === null || startDateTime === 0)
                     //Make use of the getRoot function as provided by the Spaces team (as it is a variable of the BuzzSpace)
                     startDateTime = getRoot().mDateTime;
                 
                 //If either endDateTime, userGroup or phraseSet is not supplied then set its relevant flag to true (this will mean that instead of checking against these values all releveant posts will be returned)
-                if (endDateTime === null)
+                if (endDateTime === null || endDateTime === 0)
                     allPostsTime = true;
-                if (userGroup === null)
+                if (userGroup === null || userGroup === 0)
                     allPostsUsers = true;
-                if (phraseSet === null)
+                if (phraseSet === null || phraseSet === 0)
                     allPostsPhrases = true;
 
                 //For each of temp threads children
@@ -532,5 +561,39 @@ exports.CreationOfThreads = {
         test.equal(returnedObject.mContent, "Content Tester", "This should pass.");
         test.equal(returnedObject.mMimeType, "Text", "This should pass.");
         test.done();
+    },
+    //Test of moveThread()
+    Test3: function(test){
+        var myObject1 = new Thread(0, "Herman", 0, 0, "Question", "Test3", "Move test", "Today", "Text");
+        var myObject2 = new Thread(1, "Herman", 0, 0, "Question", "Test3.1", "New parent", "Today", "Text");
+        myObject1.moveThread(myObject2);
+        var returnedObject1 = myObject1.getParentThread().getPost();
+        var returnedObject2 = myObject2.mChildren[0].getPost();
+        test.equal(returnedObject1.mPostHeading, "Test3.1", "This should pass1.");
+        test.equal(returnedObject2.mPostHeading, "Test3", "This should pass2.");
+        test.done();
+    },
+    //Test of queryThread()
+    Test4: function(test){
+        var myObject = new Thread(0, "Herman", null, 2, "Question", "Test4", "Query test", 2, "Text");
+        //var myObject2 = new Thread(_ID, _User, _Parent, _Level, _PostType, _Heading, _Content, _DateTime, _MimeType)
+        //(startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
+  
+        var userGroup = [{user: "Herman"}];
+        var phraseSet = [{phrase: "Query"}];
+        
+        var returnedObject1 = myObject.queryThread(0,0,0,0,0,0);
+        var returnedObject2 = myObject.queryThread(1,3,0,0,0,0);
+        var returnedObject3 = myObject.queryThread(0,0,3,1,0,0);
+        var returnedObject4 = myObject.queryThread(0,0,0,0,userGroup,0);
+        var returnedObject5 = myObject.queryThread(0,0,0,0,0,phraseSet);
+        
+        test.equal(returnedObject1[0].Content, "Query test", "This should pass1.");
+        test.equal(returnedObject2[0].Content, "Query test", "This should pass2.");
+        test.equal(returnedObject3[0].Content, "Query test", "This should pass3.");
+        test.equal(returnedObject4[0].Content, "Query test", "This should pass4.");
+        test.equal(returnedObject5[0].Content, "Query test", "This should pass5.");
+        test.done();
     }
 }
+//test;
