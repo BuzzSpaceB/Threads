@@ -190,7 +190,7 @@ Thread.prototype =
 	    //checks if this thread has childThreads and prevent them from modification and adding other properties
             if (this.mChildren.length >= 1) {
                 for (var i = 0; i < this.mChildren.length; i++) {
-                    this.mChildren[i].closeChildren(); //prevents modification
+                    Object.freeze(this.mChildren[i]); //prevents modification
                 }
             }
             Object.freeze(this); //prevents modification of the current thread
@@ -543,7 +543,7 @@ ThreadSummary.prototype =
 	reopenThread: function ()
 	{
 		//Martha
-	        if(isAdministrator === true) {
+	        if(isAdministrator() === true) {
 	            //checks if the thread is still inaccessible
 	            if(Object.isFrozen(this.mThread) === true) {
 	                //reopens the current thread
