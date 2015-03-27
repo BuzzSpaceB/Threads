@@ -50,12 +50,6 @@ function Post (_ID, _PostType, _Heading, _Content, _DateTime, _MimeType)
 	this.mContent = _Content;
 	this.mDateTime = _DateTime;
 	this.mMimeType = _MimeType;
-
-    var mongoose = require('mongoose');
-    var Schema = mongoose.Schema;
-    var ObjectID = Schema.ObjectId;
-
-    require('./Persistence.js').doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeType);
 }
 
 /**
@@ -92,9 +86,14 @@ function Thread (_ID, _User, _Parent, _Level, _PostType, _Heading, _Content, _Da
 	this.mChildren = [];
 	this.mStatus = Status.Open;
         this.mLevel = _Level;
+
+	var mongoose = require('mongoose');
+	var Schema = mongoose.Schema;
+	var ObjectID = Schema.ObjectId;
+	
+	require('./Persistence.js').doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeType, _User, _Parent, _Level, this.mPost, this.mStatus, this.mChildren);
 }
 
-/**
     All functions that are permitted within the scope of Threads.
  */
 Thread.prototype =
