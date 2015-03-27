@@ -665,6 +665,18 @@ exports.CreationOfThreads = {
         test.equal(child.mID, "8395", "This post is not the child of 8394");
         test.equal(child, Obj.mChildren[0].getPost(), "Not the actual child");
         test.done();
+    },
+
+    Test8: function(test){
+        var dateT = new Date();
+        var Obj = new Thread(8000, "Jason", 0, 0, "Answer", "Testing Children", "Testing the child", dateT, "Text");
+        Obj.submitPost(8001, "Jason", PostType.Question, "Is it a child?", "This should be a child of object 8000:1", "Text");
+        Obj.submitPost(8002, "Jason", PostType.Question, "Is it a child1?", "This should be a child of object 8000:2", "Text");
+        Obj.hideThread();
+        test.equal(Obj.mStatus, Status.Hidden, "Could not hide the root object.");
+        test.equal(Obj.mChildren[0].mStatus, Status.Hidden, "Could not hide the first child of Obj.");
+        test.equal(Obj.mChildren[1].mStatus, Status.Hidden, "Could not hide the second child of Obj.");
+        test.done();
     }
 }
 
