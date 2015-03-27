@@ -1,6 +1,6 @@
 /**
- * This module will persist the post in the MongoDB using Mongoose API
- * @author Jason Richard Evans
+ * This module will persist the thread and post in the MongoDB using Mongoose API
+ * @author Jason Richard Evans, Edwin Fullard
  * @param Schema
  * @param mongoose
  */
@@ -10,7 +10,7 @@
     1. http://stackoverflow.com/questions/5625569/include-external-js-file-in-node-js-app
     2. http://mongoosejs.com/docs/
  */
-function doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeType){
+function doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeType, _User, _Parent, _Level, _Post, _Status, _Children){
     //Connecting to the database...
     mongoose.connect('mongodb://localhost/test');
 
@@ -21,7 +21,7 @@ function doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeTyp
         //Database connected successfully: Continue
         PostSchema = new Schema({
             //_ID, _PostType, _Heading, _Content, _DateTime, _MimeType
-            ID: [Schema.Types.ObjectId],
+            ID: Schema.Types.ObjectId,
             PostType: String,
             Heading: String,
             Content: String,
@@ -41,6 +41,33 @@ function doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeTyp
         });
 
         postToSave.save(function (err, postToSave){
+            if (err) return console.error(err);
+            console.log("Successfully saved to database.");
+        });
+        
+        ThreadSchema = new Schema({
+            //_ID, _User, _Parent, _Level, _Post, _Children, _Status
+            ID: Schema.Types.ObjectId,
+            User: String,
+            Parent: Schema.Types.ObjectId,
+            Level: Number,
+            Post: Schema.Types.ObjectId,
+            Status: Schema.Types.ObjectId,
+            Children: [Schema.Types.ObjectId]
+        });
+        var dbThread = mongoose.model('Thread', ThreadSchema); //Creates the model that we are going to save data to.
+
+        var threadToSave = new dbThread({
+            ID: Schema.ObjectID,
+            User: _User,
+            Parent: _Parent,
+            Level: _Level,
+            Post: _Post,
+            Status: _Status,
+            Children: _Children
+        });
+
+        threadToSave.save(function (err, threadToSave){
             if (err) return console.error(err);
             console.log("Successfully saved to database.");
         });
