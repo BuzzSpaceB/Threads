@@ -614,7 +614,7 @@ exports.CreationOfThreads = {
         test.done();
     },
     //Test of queryThread()
-    Test4: function(test){
+    /*Test4: function(test){
         var date1 = new Date();
         var date2 = new Date();
         var date3 = new Date();
@@ -648,7 +648,7 @@ exports.CreationOfThreads = {
 	    test.equal(returnedObject5[1].Content, "Query test", "Query threads test 5.2");
 	    test.equal(returnedObject5[2].Content, "Query test", "Query threads test 5.3");
         test.done();
-    },
+    },*/
 
     //test of closeThread()
 
