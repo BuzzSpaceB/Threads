@@ -93,7 +93,7 @@ function Thread (_ID, _User, _Parent, _Level, _PostType, _Heading, _Content, _Da
 	
 	require('./Persistence.js').doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeType, _User, _Parent, _Level, this.mPost, this.mStatus, this.mChildren);
 }
-
+/**
     All functions that are permitted within the scope of Threads.
  */
 Thread.prototype =
@@ -649,11 +649,20 @@ exports.CreationOfThreads = {
     //test of reopenThread()
     Test6: function(test)
     {
-        var Obj = new Thread(0, "Martha", 0, 2, "Question", "Test6", "Query test 1", 2, "Text");
+        var Obj = new Thread(0, "Martha", 0, 0, "Question", "Test6", "Query test 1", 2, "Text");
         Obj.closeThread(); //Closing only to test reopening functionality
         test.equal(Obj.mStatus, "Closed", "Failed to close the thread to reopen.");
         var newObj = Obj.reopenThread();
         test.equal(newObj.mStatus, "Open", "Failed to reopen the thread.");
+        test.done();
+    },
+    Test7: function(test){
+        var dateT = new Date();
+        var Obj = new Thread(8394, "Jason", 0, 0, "Answer", "Testing Children", "Testing the child", dateT, "Text");
+        Obj.submitPost(8395, "Jason", PostType.Question, "Is it a child?", "This should be a child of object 8394", "Text");
+        var child = Obj.mChildren[0].getPost();
+        test.equal(child.mID, "8395", "This post is not the child of 8394");
+        test.equal(child, Obj.mChildren[0].getPost(), "Not the actual child");
         test.done();
     }
 }
