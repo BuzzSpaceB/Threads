@@ -189,11 +189,12 @@ Thread.prototype =
 	    //checks if this thread has childThreads and prevent them from modification and adding other properties
             if (this.mChildren.length >= 1) {
                 for (var i = 0; i < this.mChildren.length; i++) {
+                    this.mChildren[i].mStatus = Status.Closed;
                     Object.freeze(this.mChildren[i]); //prevents modification
                 }
             }
+            this.mStatus = Status.Closed;
             Object.freeze(this); //prevents modification of the current thread
-            this.mStatus = Status.Closed;	
 	},
 
         setLevels: function()
@@ -323,12 +324,12 @@ Thread.prototype =
                 var allPostsTime = false;
                 var allPostsUsers = false;
                 var allPostsPhrases = false;
-                       
+
                 //If no startDateTime value is supplied the default value is set to the root thread's DateTime
                 if (startDateTime === null || startDateTime === 0)
                     //Make use of the getRoot function as provided by the Spaces team (as it is a variable of the BuzzSpace)
                     startDateTime = getRoot().mDateTime;
-                
+
                 //If either endDateTime, userGroup or phraseSet is not supplied then set its relevant flag to true (this will mean that instead of checking against these values all releveant posts will be returned)
                 if (endDateTime === null || endDateTime === 0)
                     allPostsTime = true;
@@ -354,7 +355,7 @@ Thread.prototype =
                             *     {user: 'Susan'}
                             *  ];
                             **/
-                            
+
                             //Is there no limit from the userGroup field?
                             if (allPostsUsers)
                             {
@@ -364,7 +365,7 @@ Thread.prototype =
                             else if (userGroup.hasData(temp.mUser))//Else check the userGroup field.
                             {
                                     //Calls the function which adds the current thread's info to the answer array.
-                                   addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases); 
+                                   addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
                             }
                         }
                         else if(temp.mDateTime < endDateTime) //Else check the endDateTime field.
@@ -635,13 +636,13 @@ exports.CreationOfThreads = {
     Test5: function(test)
     {
         var Obj = new Thread(0, "Martha", 0, 2, "Question", "Test5", "Query test 1", 2, "Text");
-        Obj.closeThread();
         /**
          * The Equal test function.
          * equal(currentValue, expectedValue, AssertionMessage);
          */
-        test.equal(Obj.mStatus, "Closed", "Failure to close a thread.");
         Obj.submitPost(32, "Jason", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
+        Obj.closeThread();
+        test.equal(Obj.mStatus, "Closed", "Failure to close a thread.");
         test.equal(Obj.mChildren[0].mStatus, "Closed", "Failure to close child threads.");
         test.done();
 
