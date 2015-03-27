@@ -133,8 +133,12 @@ Thread.prototype =
         
         getRoot: function ()
         {
+            //console.log(this.mParent);
             if (this.mParent !== null) {
-		this.mParent.getRoot();
+                if (this.mParent !== 0)
+                    (this.mParent).getRoot();
+                else
+                    return this;
             }
             else
             {
@@ -144,14 +148,14 @@ Thread.prototype =
         
 	unfreeze: function ()
 	{
+        this.mStatus = Status.Open;
 		if (this.mChildren.length >= 1) {
 			for (var i = 0; i < this.mChildren.length; i++) {
 			    this.mChildren[i].unfreeze();
 			}
 		}
-	var thread = new Thread(this.mID, this.mUser, this.mParent, this.mLevel, this.mPostType, this.mHeading, this.mContent, this.mDateTime, this.mMimeType);
-        this.mThread = thread;
-        this.mStatus = Status.Open;
+	    //var thread = new Thread(this.mID, this.mUser, this.mParent, this.mLevel, this.mPostType, this.mPostHeading, this.mContent, this.mDateTime, this.mMimeType);
+        //this = thread;
 	},
 
 	closeThread: function ()
@@ -161,9 +165,10 @@ Thread.prototype =
 	        {
                 console.log('closing thread');
                 this.mStatus = Status.Closed;
-		        this.closeChildren();
+                this.closeChildren();
+                //Object.freeze(this); //prevents modification
 	            //creates thread summary
-	            if(Object.isFrozen(this) === true)
+	            if(this.mStatus === Status.Closed)
 	            {
 	                this.createThreadSummary();
 	            }
@@ -190,27 +195,27 @@ Thread.prototype =
             if (this.mChildren.length >= 1) {
                 for (var i = 0; i < this.mChildren.length; i++) {
                     this.mChildren[i].mStatus = Status.Closed;
-                    Object.freeze(this.mChildren[i]); //prevents modification
+                    //Object.freeze(this.mChildren[i]); //prevents modification
                 }
             }
-            this.mStatus = Status.Closed;
-            Object.freeze(this); //prevents modification of the current thread
+            //this.mStatus = Status.Closed;
+            //Object.freeze(this); //prevents modification of the current thread
 	},
 
-        setLevels: function()
-        {
-            //traverses this thread's children
-            if (this.mChildren.length >= 1) {
-                for (var i = 0; i < this.mChildren.length; i++) {
-                    this.mChildren[i].setLevels();
-                }
+    setLevels: function()
+    {
+        //traverses this thread's children
+        if (this.mChildren.length >= 1) {
+            for (var i = 0; i < this.mChildren.length; i++) {
+                this.mChildren[i].setLevels();
             }
-            this.mLevel = this.getParentThread().mLevel + 1; //sets this thread's level to one more than its parents level
-        },
+        }
+        this.mLevel = this.getParentThread().mLevel + 1; //sets this thread's level to one more than its parents level
+    },
 
-        /**
-        * @param newParent - Describes which thread will be the current thread's new parent (i.e. the thread the current thread will attach to). If it is null the thread will not move.
-        **/
+    /**
+    * @param newParent - Describes which thread will be the current thread's new parent (i.e. the thread the current thread will attach to). If it is null the thread will not move.
+    **/
 	moveThread: function (newParent)
 	{
 		//Herman
@@ -298,9 +303,9 @@ Thread.prototype =
                 minLevel = 0;
             if (minLevel > maxLevel || minLevel === null)
                 minLevel = maxLevel;
-            
+
             //Call the recursive extension of this function to traverse the children of this thread
-            return queryThreadRecursive(answer, temp, count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
+            return this.queryThreadRecursive(answer, temp, count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
 	},
 
         /**
@@ -328,7 +333,7 @@ Thread.prototype =
                 //If no startDateTime value is supplied the default value is set to the root thread's DateTime
                 if (startDateTime === null || startDateTime === 0)
                     //Make use of the getRoot function as provided by the Spaces team (as it is a variable of the BuzzSpace)
-                    startDateTime = getRoot().mDateTime;
+                    startDateTime = this.getRoot().mDateTime;
 
                 //If either endDateTime, userGroup or phraseSet is not supplied then set its relevant flag to true (this will mean that instead of checking against these values all releveant posts will be returned)
                 if (endDateTime === null || endDateTime === 0)
@@ -360,12 +365,12 @@ Thread.prototype =
                             if (allPostsUsers)
                             {
                                 //Calls the function which adds the current thread's info to the answer array.
-                                addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                                this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
                             }
                             else if (userGroup.hasData(temp.mUser))//Else check the userGroup field.
                             {
                                     //Calls the function which adds the current thread's info to the answer array.
-                                   addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                                   this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
                             }
                         }
                         else if(temp.mDateTime < endDateTime) //Else check the endDateTime field.
@@ -374,17 +379,17 @@ Thread.prototype =
                              if (allPostsUsers)
                             {
                                 //Calls the function which adds the current thread's info to the answer array.
-                                addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                                this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
                             }
                             else if (userGroup.hasData(temp.mUser))//Else check the userGroup field.
                             {
                                 //Calls the function which adds the current thread's info to the answer array.
-                                addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                                this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
                             }
                         }
                     }
                     //Call queryThreadRecursive again for each of the current thread's children
-                    queryThreadRecursive(temp.getChildThreads()[i], count, startDateTime, endDateTime, maxLevel, minLevel,userGroup, phraseSet);
+                    return this.queryThreadRecursive(temp.getChildThreads()[i], count, startDateTime, endDateTime, maxLevel, minLevel,userGroup, phraseSet);
                 }
             }
             else
@@ -532,6 +537,22 @@ Thread.prototype =
             extraCount += _Node.countChildren(_Node.mChildren[i]);
         }
         return extraCount;
+    },
+
+    reopenThread: function ()
+    {
+        //Martha
+        if(isAdministrator() === true) {
+            //checks if the thread is still inaccessible
+            if(this.mStatus === Status.Closed) {
+                //reopens the current thread
+                this.unfreeze();
+            }
+        }
+        else
+        {
+            alert("You are not authorized to open this thread");
+        }
     }
 };
 
@@ -552,23 +573,7 @@ function ThreadSummary (_MimeType, _Content, _DateTime, _Thread)
  */
 ThreadSummary.prototype =
 {
-	constructor: ThreadSummary,
-
-	reopenThread: function ()
-	{
-		//Martha
-	        if(isAdministrator() === true) {
-	            //checks if the thread is still inaccessible
-	            if(Object.isFrozen(this.mThread) === true) {
-	                //reopens the current thread
-	                this.mThread.unfreeze();
-	            }
-	        }
-	        else
-	        {
-	            alert("You are not authorized to open this thread");
-	        }
-	}
+	constructor: ThreadSummary
 };
 
 
@@ -667,8 +672,8 @@ exports.CreationOfThreads = {
         var Obj = new Thread(0, "Martha", 0, 0, "Question", "Test6", "Query test 1", 2, "Text");
         Obj.closeThread(); //Closing only to test reopening functionality
         test.equal(Obj.mStatus, "Closed", "Failed to close the thread to reopen.");
-        var newObj = Obj.reopenThread();
-        test.equal(newObj.mStatus, "Open", "Failed to reopen the thread.");
+        Obj.reopenThread();
+        test.equal(Obj.mStatus, "Open", "Failed to reopen the thread.");
         test.done();
     },
     Test7: function(test){
