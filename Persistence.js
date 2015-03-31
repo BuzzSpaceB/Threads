@@ -72,6 +72,7 @@ function doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeTyp
             console.log("Successfully saved to database.");
         });
     });
+    mongoose.connection.close(); //closing connection after were done.
 }
 
 module.exports.doPersistence = doPersistence;
