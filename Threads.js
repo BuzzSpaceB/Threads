@@ -60,11 +60,6 @@ Post.prototype =
 	constructor: Post
 };
 
-function isAdministrator ()
-{
-    return true;
-}
-
 /**
  * The Constructor for a Thread object. It initializes a thread and a post within that thread. There exist a one-to-one relationship between a thread and a post.
  * @param _User - Identifies who created/initiated the thread.
@@ -133,7 +128,6 @@ Thread.prototype =
         
         getRoot: function ()
         {
-            //console.log(this.mParent);
             if (this.mParent !== null) {
                 if (this.mParent !== 0)
                     (this.mParent).getRoot();
@@ -154,29 +148,18 @@ Thread.prototype =
 			    this.mChildren[i].unfreeze();
 			}
 		}
-	    //var thread = new Thread(this.mID, this.mUser, this.mParent, this.mLevel, this.mPostType, this.mPostHeading, this.mContent, this.mDateTime, this.mMimeType);
-        //this = thread;
 	},
 
 	closeThread: function ()
 	{
 		//Martha
-	        if(isAdministrator() === true)
-	        {
-                console.log('closing thread');
-                this.mStatus = Status.Closed;
-                this.closeChildren();
-                //Object.freeze(this); //prevents modification
-	            //creates thread summary
-	            if(this.mStatus === Status.Closed)
-	            {
-	                this.createThreadSummary();
-	            }
-	        }
-	        else
-	        {
-	            alert('You are not authorized to close this thread');
-	        }
+	        console.log('closing thread');
+            this.mStatus = Status.Closed;
+            this.closeChildren();
+            if(this.mStatus === Status.Closed)
+            {
+                this.createThreadSummary();
+            }
 	},
 	
 	createThreadSummary: function()
@@ -195,11 +178,8 @@ Thread.prototype =
             if (this.mChildren.length >= 1) {
                 for (var i = 0; i < this.mChildren.length; i++) {
                     this.mChildren[i].mStatus = Status.Closed;
-                    //Object.freeze(this.mChildren[i]); //prevents modification
                 }
             }
-            //this.mStatus = Status.Closed;
-            //Object.freeze(this); //prevents modification of the current thread
 	},
 
     setLevels: function()
@@ -219,62 +199,52 @@ Thread.prototype =
 	moveThread: function (newParent)
 	{
 		//Herman
-            //Make use of the isAdministrator function as provided by the Authorization team
-            if(isAdministrator() === true)
+            if(newParent !== null)
             {
-                if(newParent !== null)
+                //Remove this thread from its current parent's children array
+                var index = this.mParent.mChildren.indexOf(this);
+                if(index !== -1) {
+                        this.mParent.mChildren.splice(index, 1);
+                }
+
+                //Add this thread to its new parent's children array
+                newParent.mChildren.push(this);
+
+                //Assign newParent as this thread's parent
+                this.mParent = newParent;
+
+                //Assign newParent's status to this thread (e.g. current thread is open, if it is moved to be the child of a thread which is closed then the current thread will also become closed
+                this.mStatus = newParent.mStatus;
+
+                //Assign newParent's status to this thread's children and their children, etc.
+                if(newParent.mStatus !== this.mStatus)
                 {
-                    //Remove this thread from its current parent's children array
-                    var index = this.mParent.mChildren.indexOf(this);
-                    if(index !== -1) {
-                            this.mParent.mChildren.splice(index, 1);
-                    }
-                    
-                    //Add this thread to its new parent's children array
-                    newParent.mChildren.push(this);
-                    
-                    //Assign newParent as this thread's parent
-                    this.mParent = newParent;
-                    
-                    //Assign newParent's status to this thread (e.g. current thread is open, if it is moved to be the child of a thread which is closed then the current thread will also become closed
-                    this.mStatus = newParent.mStatus;
-                    
-                    //Assign newParent's status to this thread's children and their children, etc.
-                    if(newParent.mStatus !== this.mStatus)
+                    if(newParent.mStatus === Status.Open)
                     {
-                    	if(newParent.mStatus === Status.Open)
-                    	{
-                    		if(this.mStatus === Status.Closed)
-                    			this.reopenThread();
-                    		else if (this.mStatus === Status.Hidden)
-                    			this.unhideThread();
-                    	}
-                    	else if (newParent.mStatus === Status.Closed)
-                    	{
-                    		this.closeThread();
-                    	}
-                    	else if (newParent.mStatus === Status.Hidden)
-                    	{
-                    		if (this.mStatus === Status.Closed)
-                    			this.reopenThread();
-                    		this.hideThread();
-                    	}
+                        if(this.mStatus === Status.Closed)
+                            this.reopenThread();
+                        else if (this.mStatus === Status.Hidden)
+                            this.unhideThread();
                     }
-                    this.setLevels();
-                    
-                    //The thread was successfully moved
-                    return true;
+                    else if (newParent.mStatus === Status.Closed)
+                    {
+                        this.closeThread();
+                    }
+                    else if (newParent.mStatus === Status.Hidden)
+                    {
+                        if (this.mStatus === Status.Closed)
+                            this.reopenThread();
+                        this.hideThread();
+                    }
                 }
-                else
-                {
-                    //The thread was not successfully moved
-                    return false;
-                }
+                this.setLevels();
+
+                //The thread was successfully moved
+                return true;
             }
             else
             {
                 //The thread was not successfully moved
-                alert('You are not authorized to move this thread');
                 return false;
             }
 	},
@@ -519,7 +489,7 @@ Thread.prototype =
 
         for (k; k < (this.mChildren.length); k++){
             ++counter;
-            counter += countChildren(this.mChildren[k]);
+            counter += this.countChildren(this.mChildren[k]);
         }
         return counter;
 	},
@@ -542,16 +512,10 @@ Thread.prototype =
     reopenThread: function ()
     {
         //Martha
-        if(isAdministrator() === true) {
-            //checks if the thread is still inaccessible
-            if(this.mStatus === Status.Closed) {
-                //reopens the current thread
-                this.unfreeze();
-            }
-        }
-        else
-        {
-            alert("You are not authorized to open this thread");
+        //checks if the thread is still inaccessible
+        if(this.mStatus === Status.Closed) {
+            //reopens the current thread
+            this.unfreeze();
         }
     }
 };
