@@ -14,6 +14,36 @@ Then we will need the following functions implemented.
 	2. boolean hasRead() - Does a simple query to the database via Mongoose and if it finds a result
 							it returns true (the user read the post) else returns false.
 
+-> Martha and Sboniso suggestions
+-------------------------------------------------
+function readPost(userid, postid)
+{
+
+    //send loggedin userid and postid from database
+    //something like
+    MongoUserId = userid;
+    //call the helper function to extend/view the post link
+    this.view();
+    //change the status to read;
+}
+
+function view()
+{
+    //this function gets the contents of the post and output them
+    var contents = this.getpost().content;
+    var strContents = JSON.stringify(contents);
+    console.log(strContents);
+
+}
+
+function markedPostRead()
+{
+    if(hasRead())
+    {
+        //here we can change the colour of the post link using CSS.
+    }
+}
+
 For more information on how to use Mongoose:
 	* http://mongoosejs.com/docs/guide.html
 	* http://stackoverflow.com/questions/5625569/include-external-js-file-in-node-js-app
