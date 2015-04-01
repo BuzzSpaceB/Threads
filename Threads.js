@@ -126,19 +126,19 @@ Thread.prototype =
 		return this.mParent;
 	},
         
-        getRoot: function ()
-        {
-            if (this.mParent !== null) {
-                if (this.mParent !== 0)
-                    (this.mParent).getRoot();
-                else
-                    return this;
-            }
-            else
-            {
-                return this;
-            }
-        },
+    getRoot: function ()
+{
+    if (this.mParent !== null) {
+        if (this.mParent !== 0)
+            (this.mParent).getRoot();
+        else
+            return this;
+    }
+    else
+    {
+        return this;
+    }
+},
         
 	unfreeze: function ()
 	{
@@ -278,156 +278,150 @@ Thread.prototype =
             return this.queryThreadRecursive(answer, temp, count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
 	},
 
-        /**
-         * @param answer - The array in which the answer will be stored in.
-         * @param temp - The passes thread currently being tested.
-         * @param count - A counter used to keep track of the depth of the tree in relation to the starting thread.
-         * @param startDateTime -  Restrict returned posts to be after this time stamp. Default is the time stamp of the root post in the Buzz space.
-         * @param endDateTime -  Restrict returned posts to be before this time stamp. If unspecified all posts are returned.
-         * @param maxLevel - Restrict returned posts to be at most at the specified depth relative to the post. If this value is 0, minLevel will also be 0 only the specified post is returned.
-         * @param minLevel - Restrict returned posts to be at least at the specified depth relative to the post. Obviously it has to be less or equal to maxLevel. If both minLevel and maxLevel is 1, only the immediate children are retirieved.
-         * @param userGroup - Restricts returned posts to be limited to a specific user group.
-         * @param phraseSet - Restrict returned posts to be only posts that contains all the strings specified in the phrase set. The default is an empty set. If the set is empty all posts are returned.
-         **/
-        queryThreadRecursive: function (answer, temp, count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
+    /**
+     * @param answer - The array in which the answer will be stored in.
+     * @param temp - The passes thread currently being tested.
+     * @param count - A counter used to keep track of the depth of the tree in relation to the starting thread.
+     * @param startDateTime -  Restrict returned posts to be after this time stamp. Default is the time stamp of the root post in the Buzz space.
+     * @param endDateTime -  Restrict returned posts to be before this time stamp. If unspecified all posts are returned.
+     * @param maxLevel - Restrict returned posts to be at most at the specified depth relative to the post. If this value is 0, minLevel will also be 0 only the specified post is returned.
+     * @param minLevel - Restrict returned posts to be at least at the specified depth relative to the post. Obviously it has to be less or equal to maxLevel. If both minLevel and maxLevel is 1, only the immediate children are retirieved.
+     * @param userGroup - Restricts returned posts to be limited to a specific user group.
+     * @param phraseSet - Restrict returned posts to be only posts that contains all the strings specified in the phrase set. The default is an empty set. If the set is empty all posts are returned.
+     **/
+    queryThreadRecursive: function (answer, temp, count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
 	{
 		//Herman
-            //If temp is null we have reached the end of the tree
-            if (temp !== null)
-            {
-                //variables which will be used to check if the default values for endDateTime, userGroup and phraseSet should be set
-                var allPostsTime = false;
-                var allPostsUsers = false;
-                var allPostsPhrases = false;
+        //variables which will be used to check if the default values for endDateTime, userGroup and phraseSet should be set
+        var allPostsTime = false;
+        var allPostsUsers = false;
+        var allPostsPhrases = false;
 
-                //If no startDateTime value is supplied the default value is set to the root thread's DateTime
-                if (startDateTime === null || startDateTime === 0)
-                    //Make use of the getRoot function as provided by the Spaces team (as it is a variable of the BuzzSpace)
-                    startDateTime = this.getRoot().mDateTime;
+        //If no startDateTime value is supplied the default value is set to the root thread's DateTime
+        if (startDateTime === null || startDateTime === 0)
+            //Make use of the getRoot function as provided by the Spaces team (as it is a variable of the BuzzSpace)
+            startDateTime = this.getRoot().mDateTime;
 
-                //If either endDateTime, userGroup or phraseSet is not supplied then set its relevant flag to true (this will mean that instead of checking against these values all releveant posts will be returned)
-                if (endDateTime === null || endDateTime === 0)
-                    allPostsTime = true;
-                if (userGroup === null || userGroup === 0)
-                    allPostsUsers = true;
-                if (phraseSet === null || phraseSet === 0)
-                    allPostsPhrases = true;
+        //If either endDateTime, userGroup or phraseSet is not supplied then set its relevant flag to true (this will mean that instead of checking against these values all releveant posts will be returned)
+        if (endDateTime === null || endDateTime === 0)
+            allPostsTime = true;
+        if (userGroup === null || userGroup === 0)
+            allPostsUsers = true;
+        if (phraseSet === null || phraseSet === 0)
+            allPostsPhrases = true;
 
-                //For each of temp threads children
-                for (var i = 0;i < temp.getChildThreads().length; i++)
+        //Check the startDateTime, minLevel and maxLevel query fields
+        if ((temp.mDateTime > startDateTime) && (++count >= minLevel) && (++count <= maxLevel)) {
+            //Is there no limit from the endDateTime field?
+            if (allPostsTime) {
+                /**
+                 *Example of how a userGroup data set looks
+                 *
+                 *  userGroup = [
+                 *     {user: 'John'},
+                 *     {user: 'Susan'}
+                 *  ];
+                 **/
+
+                //Is there no limit from the userGroup field?
+                if (allPostsUsers) {
+                    //Calls the function which adds the current thread's info to the answer array.
+                    this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                }
+                else if (userGroup.hasData(temp.mUser))//Else check the userGroup field.
                 {
-                    //Check the startDateTime, minLevel and maxLevel query fileds
-                    if ((temp.mDateTime > startDateTime) && (++count >= minLevel) && (++count <= maxLevel))
-                    {
-                        //Is there no limit from the endDateTime field?
-                        if (allPostsTime)
-                        {
-                            /**
-                            *Example of how a userGroup data set looks
-                            *
-                            *  userGroup = [
-                            *     {user: 'John'},
-                            *     {user: 'Susan'}
-                            *  ];
-                            **/
-
-                            //Is there no limit from the userGroup field?
-                            if (allPostsUsers)
-                            {
-                                //Calls the function which adds the current thread's info to the answer array.
-                                this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
-                            }
-                            else if (userGroup.hasData(temp.mUser))//Else check the userGroup field.
-                            {
-                                    //Calls the function which adds the current thread's info to the answer array.
-                                   this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
-                            }
-                        }
-                        else if(temp.mDateTime < endDateTime) //Else check the endDateTime field.
-                        {
-                            //Is there no limit from the userGroup field?
-                             if (allPostsUsers)
-                            {
-                                //Calls the function which adds the current thread's info to the answer array.
-                                this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
-                            }
-                            else if (userGroup.hasData(temp.mUser))//Else check the userGroup field.
-                            {
-                                //Calls the function which adds the current thread's info to the answer array.
-                                this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
-                            }
-                        }
-                    }
-                    //Call queryThreadRecursive again for each of the current thread's children
-                    return this.queryThreadRecursive(temp.getChildThreads()[i], count, startDateTime, endDateTime, maxLevel, minLevel,userGroup, phraseSet);
+                    //Calls the function which adds the current thread's info to the answer array.
+                    this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
                 }
             }
-            else
+            else if (temp.mDateTime < endDateTime) //Else check the endDateTime field.
             {
-                //Once the entire tree has been traversed we return the array of queryInfo objects as an answer.
-                return answer;
+                //Is there no limit from the userGroup field?
+                if (allPostsUsers) {
+                    //Calls the function which adds the current thread's info to the answer array.
+                    this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                }
+                else if (userGroup.hasData(temp.mUser))//Else check the userGroup field.
+                {
+                    //Calls the function which adds the current thread's info to the answer array.
+                    this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                }
             }
+        }
+
+        if(this.getChildThreads().length >= 0) {
+            //For each of temp threads children
+            for (var i = 0; i < this.mChildren.length; i += 1) {
+                //Call queryThreadRecursive again for each of the current thread's children
+                return this.queryThreadRecursive(temp.getChildThreads()[i], count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
+            }
+        }
+        else
+        {
+            //Once the entire tree has been traversed we return the array of queryInfo objects as an answer.
+            return answer;
+        }
 	},
 
-        /**
-         * @param answer - The array in which the answer will be stored in.
-         * @param temp - The passes thread currently being tested.
-         * @param phraseSet - Restrict returned posts to be only posts that contains all the strings specified in the phrase set. The default is an empty set. If the set is empty all posts are returned.
-         * @param allPostsPhrases - A flag to indicate whether there are any phrases for which the query must search.
-         **/
-        addToQueryAnswer: function (answer, temp, phraseSet, allPostsPhrases)
-        {
-             //Variable to help check if the phrases contained in phraseSet all appear in the current thread's content
-             var flag = true;
-                        
-             /**
-              *Example of how a phraseSet data set looks
-              *
-              *  phraseSet = [
-              *     {phrase: 'example phrase'},
-              *     {phrase: 'second example phrase'}
-              *  ];
-              **/
-                     
-             //If no phraseSet was supplied then just return all relevant posts
-             if (!allPostsPhrases)
-             {
-                //For loop that traverses all the phrases in the phraseSet
-                for(var i in phraseSet)
-                {
-                    //Compare each phrase in the phraseSet to the current thread's content
-                    if((temp.getPost().mContent.indexOf(phraseSet[i]) === -1))
-                    {
-                        //If a phrase is not found in the current thread's content then set the flag to false.
-                        flag = false;
-                    }
-                }
-             }
-             //If all phrases were found we can then proceed to add this thread's info to the answer array
-             if (flag)
-             {
-                 /**
-                  * queryInfo - an object of all the information about a post the query will return.
-                  * 
-                  * ParentID - The ID of the current thread's parent.
-                  *  Author - The user who posted the current thread.
-                  * TimeStamp - The date and time the current threads was made.
-                  * Content - The content of the post of the current thread;
-                  * Status - The status of the current thread.
-                  * Level - The depth level of the current thread in the main tree.
-                  **/
-                  var queryInfo = 
-                      {ParentID:  temp.mParent.mID,
-                      Author:  temp.mUser,
-                      TimeStamp:  temp.getPost().mDateTime,
-                      Content:  temp.getPost().mContent,
-                      Status:  temp.mStatus,
-                      Level:  temp.mLevel};
+    /**
+     * @param answer - The array in which the answer will be stored in.
+     * @param temp - The passes thread currently being tested.
+     * @param phraseSet - Restrict returned posts to be only posts that contains all the strings specified in the phrase set. The default is an empty set. If the set is empty all posts are returned.
+     * @param allPostsPhrases - A flag to indicate whether there are any phrases for which the query must search.
+     **/
+    addToQueryAnswer: function (answer, temp, phraseSet, allPostsPhrases)
+    {
+         //Variable to help check if the phrases contained in phraseSet all appear in the current thread's content
+         var flag = true;
 
-                  //Add this thread's queryInfo object to the array of answers
-                  answer.push(queryInfo);
-              }
-        },
+         /**
+          *Example of how a phraseSet data set looks
+          *
+          *  phraseSet = [
+          *     {phrase: 'example phrase'},
+          *     {phrase: 'second example phrase'}
+          *  ];
+          **/
+
+         //If no phraseSet was supplied then just return all relevant posts
+         if (!allPostsPhrases)
+         {
+            //For loop that traverses all the phrases in the phraseSet
+            for(var i in phraseSet)
+            {
+                //Compare each phrase in the phraseSet to the current thread's content
+                if((temp.getPost().mContent.indexOf(phraseSet[i]) === -1))
+                {
+                    //If a phrase is not found in the current thread's content then set the flag to false.
+                    flag = false;
+                }
+            }
+         }
+         //If all phrases were found we can then proceed to add this thread's info to the answer array
+         if (flag)
+         {
+             /**
+              * queryInfo - an object of all the information about a post the query will return.
+              *
+              * ParentID - The ID of the current thread's parent.
+              *  Author - The user who posted the current thread.
+              * TimeStamp - The date and time the current threads was made.
+              * Content - The content of the post of the current thread;
+              * Status - The status of the current thread.
+              * Level - The depth level of the current thread in the main tree.
+              **/
+              var queryInfo =
+                  {ParentID:  temp.mParent.mID,
+                  Author:  temp.mUser,
+                  TimeStamp:  temp.getPost().mDateTime,
+                  Content:  temp.getPost().mContent,
+                  Status:  temp.mStatus,
+                  Level:  temp.mLevel};
+
+              //Add this thread's queryInfo object to the array of answers
+              answer.push(queryInfo);
+          }
+    },
 
     /**
      *   This functions hide Threads that the adminstrator doesnt want them
@@ -578,7 +572,7 @@ exports.CreationOfThreads = {
         test.done();
     },
     //Test of queryThread()
-    /*Test4: function(test){
+    Test4: function(test){
         var date1 = new Date();
         var date2 = new Date();
         var date3 = new Date();
@@ -612,7 +606,7 @@ exports.CreationOfThreads = {
 	    test.equal(returnedObject5[1].Content, "Query test", "Query threads test 5.2");
 	    test.equal(returnedObject5[2].Content, "Query test", "Query threads test 5.3");
         test.done();
-    },*/
+    },
 
     //test of closeThread()
 
