@@ -6,7 +6,8 @@ Status =
 {
 	Open: "Open",
 	Closed: "Closed",
-	Hidden: "Hidden"
+	Hidden: "Hidden",
+	Read: "Read"
 };
 
 /**
@@ -472,8 +473,31 @@ Thread.prototype =
 
 	markPostAsRead: function ()
 	{
+		//check if the post is read. if yes, return.
+		if(this.mStatus === Status.Read)
+        	{
+            		return;
+        	}
+        	else
+        	{
+            	//else read the post
+            	this.readPost(this.mUser,this.mID);
+        	}
 		
 	},
+	
+	readPost: function(userid, postid) 
+	{
+        	this.mUser = userid;
+        	this.mID = postid;
+
+        	//check if the current user and post exist in the database and change the status to read;
+        	if (this.mUser === MongoDbUser && this.mID === MongoDbPostId)
+        	{
+            		this.mStatus = Status.Read;
+        	}
+
+    },
 
     /**
      * Counts the number of thread children that resides beneath our current thread.
