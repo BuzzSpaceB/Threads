@@ -153,7 +153,6 @@ Thread.prototype =
 	closeThread: function ()
 	{
 		//Martha
-	        console.log('closing thread');
             this.mStatus = Status.Closed;
             this.closeChildren();
             if(this.mStatus === Status.Closed)
@@ -260,7 +259,6 @@ Thread.prototype =
 	queryThread: function (startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
 	{
 		//Herman
-                
             //Variable to keep track of the current thread being checked as it traverses the tree
             var temp = this;
              //Variable to keep track of the depth of the temp thread in relation to the starting thread
@@ -275,7 +273,7 @@ Thread.prototype =
                 minLevel = maxLevel;
 
             //Call the recursive extension of this function to traverse the children of this thread
-            return this.queryThreadRecursive(answer, temp, count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
+            return temp.queryThreadRecursive(answer, temp, count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
 	},
 
     /**
@@ -298,9 +296,10 @@ Thread.prototype =
         var allPostsPhrases = false;
 
         //If no startDateTime value is supplied the default value is set to the root thread's DateTime
-        if (startDateTime === null || startDateTime === 0)
+        if (startDateTime === null || startDateTime === 0) {
             //Make use of the getRoot function as provided by the Spaces team (as it is a variable of the BuzzSpace)
-            startDateTime = this.getRoot().mDateTime;
+            startDateTime = temp.getRoot().getPost().mDateTime;
+        }
 
         //If either endDateTime, userGroup or phraseSet is not supplied then set its relevant flag to true (this will mean that instead of checking against these values all releveant posts will be returned)
         if (endDateTime === null || endDateTime === 0)
@@ -309,55 +308,54 @@ Thread.prototype =
             allPostsUsers = true;
         if (phraseSet === null || phraseSet === 0)
             allPostsPhrases = true;
+        ++count;
 
         //Check the startDateTime, minLevel and maxLevel query fields
-        if ((temp.mDateTime > startDateTime) && (++count >= minLevel) && (++count <= maxLevel)) {
+        if ((temp.getPost().mDateTime >= startDateTime) && (count >= minLevel) && (count <= maxLevel)) {
             //Is there no limit from the endDateTime field?
             if (allPostsTime) {
                 /**
                  *Example of how a userGroup data set looks
                  *
                  *  userGroup = [
-                 *     {user: 'John'},
-                 *     {user: 'Susan'}
+                 *     'John',
+                 *     'Susan'
                  *  ];
                  **/
-
                 //Is there no limit from the userGroup field?
                 if (allPostsUsers) {
                     //Calls the function which adds the current thread's info to the answer array.
-                    this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                    temp.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
                 }
-                else if (userGroup.hasData(temp.mUser))//Else check the userGroup field.
+                else if (userGroup.indexOf(temp.mUser) !== -1)//Else check the userGroup field.
                 {
                     //Calls the function which adds the current thread's info to the answer array.
-                    this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                    temp.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
                 }
             }
-            else if (temp.mDateTime < endDateTime) //Else check the endDateTime field.
+            else if (temp.getPost().mDateTime <= endDateTime) //Else check the endDateTime field.
             {
                 //Is there no limit from the userGroup field?
                 if (allPostsUsers) {
                     //Calls the function which adds the current thread's info to the answer array.
-                    this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                    temp.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
                 }
                 else if (userGroup.hasData(temp.mUser))//Else check the userGroup field.
                 {
                     //Calls the function which adds the current thread's info to the answer array.
-                    this.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
+                    temp.addToQueryAnswer(answer, temp, phraseSet, allPostsPhrases);
                 }
             }
         }
 
-        if(this.getChildThreads().length >= 0) {
+        //If the current thread has children
+        if(typeof temp.mChildren !== 'undefined' && temp.getChildThreads().length > 0) {
             //For each of temp threads children
-            for (var i = 0; i < this.mChildren.length; i += 1) {
+            for (var i = 0; i < temp.mChildren.length; i += 1) {
                 //Call queryThreadRecursive again for each of the current thread's children
-                return this.queryThreadRecursive(temp.getChildThreads()[i], count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
+                temp.queryThreadRecursive(answer, temp.getChildThreads()[i], count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
             }
-        }
-        else
-        {
+
             //Once the entire tree has been traversed we return the array of queryInfo objects as an answer.
             return answer;
         }
@@ -378,8 +376,8 @@ Thread.prototype =
           *Example of how a phraseSet data set looks
           *
           *  phraseSet = [
-          *     {phrase: 'example phrase'},
-          *     {phrase: 'second example phrase'}
+          *     'example phrase',
+          *     'second example phrase'
           *  ];
           **/
 
@@ -400,6 +398,12 @@ Thread.prototype =
          //If all phrases were found we can then proceed to add this thread's info to the answer array
          if (flag)
          {
+              //If current thread does not have a parent thread then set the Parent ID to 0
+              var parentID = 0;
+              if (temp.mParent !== 0) {
+                  parentID = temp.mParent.mID;
+              }
+
              /**
               * queryInfo - an object of all the information about a post the query will return.
               *
@@ -411,7 +415,7 @@ Thread.prototype =
               * Level - The depth level of the current thread in the main tree.
               **/
               var queryInfo =
-                  {ParentID:  temp.mParent.mID,
+                  {ParentID:  parentID,
                   Author:  temp.mUser,
                   TimeStamp:  temp.getPost().mDateTime,
                   Content:  temp.getPost().mContent,
@@ -576,35 +580,38 @@ exports.CreationOfThreads = {
         var date1 = new Date();
         var date2 = new Date();
         var date3 = new Date();
-        
+
+        //"Root" thread to be tested
         var myObject1 = new Thread(0, "Herman", 0, 2, "Question", "Test4.1", "Query test 1", date2, "Text");
-        //var myObject2 = new Thread(_ID, _User, _Parent, _Level, _PostType, _Heading, _Content, _DateTime,
-        // _MimeType)
-        //(startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet)
-        
-        myObject1.submitPost(1, "Herman", "Question", "Test4.2", "Query test 2", "Text");
-        myObject1.submitPost(2, "Herman", "Question", "Test4.3", "Query test 3", "Text");
-	    
-        var userGroup = [{user: "Herman"}];
-        var phraseSet = [{phrase: "Query"}];
-        
+
+        //Child  of "root" thread
+        myObject1.submitPost(1, "Pete", "Question", "Test4.2", "Query test 2", "Text");
+        //Child  of child of "root" thread
+        myObject1.getChildThreads()[0].submitPost(2, "Joe", "Question", "Test4.3", "Query test 3", "Text");
+
+        //userGroup to test with
+        var userGroup = ["Herman", "Pete"];
+        //PhraseGroups to test with
+        var phraseSet1 = ["Query"];
+        var phraseSet2 = ["Query", "1"];
+
         var returnedObject1 = myObject1.queryThread(0,0,0,0,0,0);
         var returnedObject2 = myObject1.queryThread(date1,date3,0,0,0,0);
-        var returnedObject3 = myObject1.queryThread(0,0,3,1,0,0);
-        var returnedObject4 = myObject1.queryThread(0,0,0,0,userGroup,0);
-        var returnedObject5 = myObject1.queryThread(0,0,0,0,0,phraseSet);
-        
-        test.equal(returnedObject1[0].Content, "Query test", "Query threads test 1.1");
-	    test.equal(returnedObject1[1].Content, "Query test", "Query threads test 1.2");
-	    test.equal(returnedObject1[2].Content, "Query test", "Query threads test 1.3");
-	    test.equal(returnedObject1[0].Content, "Query test", "Query threads test 1");
-        test.equal(returnedObject2[0].Content, "Query test", "Query threads test 2");
-        test.equal(returnedObject3[0].Content, "Query test", "Query threads test 3");
-        test.equal(returnedObject4[0].Content, "Query test", "Query threads test 4.1");
-	    test.equal(returnedObject4[1].Content, "Query test", "Query threads test 4.2");
-        test.equal(returnedObject5[0].Content, "Query test", "Query threads test 5.1");
-	    test.equal(returnedObject5[1].Content, "Query test", "Query threads test 5.2");
-	    test.equal(returnedObject5[2].Content, "Query test", "Query threads test 5.3");
+        var returnedObject3 = myObject1.queryThread(0,0,4,1,0,0);
+        var returnedObject4 = myObject1.queryThread(0,0,4,0,userGroup,0);
+        var returnedObject5 = myObject1.queryThread(0,0,4,0,0,phraseSet1);
+        var returnedObject6 = myObject1.queryThread(0,0,4,0,0,phraseSet2);
+
+        test.equal(returnedObject1[0]["Content"], "Query test 1", "Query threads test 1");
+        test.equal(returnedObject2[0]["Content"], "Query test 1", "Query threads test 2");
+        test.equal(returnedObject3[0]["Content"], "Query test 2", "Query threads test 3.1");
+        test.equal(returnedObject3[1]["Content"], "Query test 3", "Query threads test 3.2");
+        test.equal(returnedObject4[0]["Content"], "Query test 1", "Query threads test 4.1");
+	    test.equal(returnedObject4[1]["Content"], "Query test 2", "Query threads test 4.2");
+        test.equal(returnedObject5[0]["Content"], "Query test 1", "Query threads test 5.1");
+	    test.equal(returnedObject5[1]["Content"], "Query test 2", "Query threads test 5.2");
+	    test.equal(returnedObject5[2]["Content"], "Query test 3", "Query threads test 5.3");
+        test.equal(returnedObject6[0]["Content"], "Query test 1", "Query threads test 6");
         test.done();
     },
 
