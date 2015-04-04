@@ -16,8 +16,7 @@ var postModel = require('./Models/posts');
 var threadModel = require('./Models/threads');
 
 function doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeType, _User, _Parent, _Level, _Post, _Status, _Children){
-    mongoose.connect('mongodb://localhost/test');
-    var db = mongoose.connection;
+    var db = mongoose.createConnection('mongodb://localhost/test');
     db.on('error', console.error.bind(console, 'connection error:'));
     db.once('open', function (callback) {
         // yay!
