@@ -19,21 +19,22 @@ function doPersistence(Schema, mongoose1, _PostType, _Heading, _Content, _MimeTy
     //var db = mongoose.createConnection('mongodb://localhost/test');
     //mongoose.connect('mongodb://localhost/test');
     var db = mongoose.connection;
+    mongoose.connect('mongodb://localhost/test');
     db.on('error', console.error.bind(console, 'connection error:'));
     db.on('open', function (callback) {
         // yay!
         console.log("Testing here");
-        var thisDay = new Date();
-        postModel.collection.insert({
-            ID: Schema.ObjectId,
-            PostType: _PostType,
-            Heading: _Heading,
-            Content: _Content,
-            DateCreated: thisDay,
-            MimeType: _MimeType}, function(err, doc) {
-                if(err) console.log("Error inserting new post record.");
-                else console.log("New post persisted to database.");
-        });
+        // var thisDay = new Date();
+        // postModel.collection.insert({
+        //     ID: Schema.ObjectId,
+        //     PostType: _PostType,
+        //     Heading: _Heading,
+        //     Content: _Content,
+        //     DateCreated: thisDay,
+        //     MimeType: _MimeType}, function(err, doc) {
+        //         if(err) console.log("Error inserting new post record.");
+        //         else console.log("New post persisted to database.");
+        // });
 
         var thisDay = new Date();
         threadModel.collection.insert({
@@ -44,7 +45,7 @@ function doPersistence(Schema, mongoose1, _PostType, _Heading, _Content, _MimeTy
             Post: _Post,
             Status: _Status,
             Children: _Children}, function(err, doc) {
-            if(err) console.log("Error inserting new thread record.");
+            if(err) console.log("Error inserting new thread record." + err);
             else console.log("New thread persisted to database.");
         });
     });
@@ -52,7 +53,6 @@ function doPersistence(Schema, mongoose1, _PostType, _Heading, _Content, _MimeTy
       //  mongoose.disconnect();
       //  console.log("Closing database connection...");
     //});
-    mongoose.connect('mongodb://localhost/test');
 }
 
 module.exports.doPersistence = doPersistence;
