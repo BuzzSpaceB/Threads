@@ -1,3 +1,7 @@
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test');
+var Shema = mongoose.Schema;
+
 Status =
 {
 	Open: "Open",
@@ -83,6 +87,34 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 			this.mDateTime = _DateTime;
 			this.mThread = _Thread;
 		},
+		//Getters  _ID, _PostType, _Heading, _Content, _DateTime, _MimeType
+		getStatus: function(){
+			return mStatus;
+		},
+
+		getChildren: function(){
+			return mChildren;
+		},
+
+		getPostType: function(){
+			return mPostType;
+		},
+
+		getHeading: function(){
+			return mHeading;
+		},
+
+		getContent: function(){
+			return mContent;
+		},
+
+		getDateTime: function(){
+			return mDateTime;
+		},
+
+		getMimeType: function(){
+			return mMimeType;
+		},
 
 		// Post: function(_ID, _PostType, _Heading, _Content, _DateTime, _MimeType)
 		// {
@@ -108,7 +140,7 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 
 		getChildThreads: function ()
 		{
-			return this.mChildren;
+			return mChildren;
 		},
 
 	    /**
@@ -129,12 +161,12 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 
 		getPost: function ()
 		{
-			return this.mPost;
+			return mPost;
 		},
 
 		getParentThread: function ()
 		{
-			return this.mParent;
+			return mParent;
 		},
 	        
 	    getRoot: function ()
