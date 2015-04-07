@@ -28,7 +28,7 @@ exports.testChildThreads = function(test){
     
     Thread.create();
     //submitPost: function (_ID, _User, _PostType, _Heading, _Content, _MimeType)
-    Thread.submitPost(223, 'Pietie', 'Answer', 'Answering', "Answering your question.", 'Text');
+    Thread.submitPost();
     /**
      * The following line of code is called an Assertion. It is the "TEST" being performed.
      */

@@ -171,9 +171,9 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 	        
 	    getRoot: function ()
 		{
-		    if (this.mParent !== null) {
-		        if (this.mParent !== 0)
-		            (this.mParent).getRoot();
+		    if (mParent !== null) {
+		        if (mParent !== 0)
+		            (mParent).getRoot();
 		        else
 		            return this;
 		    }
@@ -185,10 +185,10 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 	        
 		unfreeze: function ()
 		{
-	        this.mStatus = Status.Open;
-			if (this.mChildren.length >= 1) {
-				for (var i = 0; i < this.mChildren.length; i++) {
-				    this.mChildren[i].unfreeze();
+	        mStatus = Status.Open;
+			if (mChildren.length >= 1) {
+				for (var i = 0; i < mChildren.length; i++) {
+				    mChildren[i].unfreeze();
 				}
 			}
 		},
@@ -196,20 +196,20 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 		closeThread: function ()
 		{
 			//Martha
-	            this.mStatus = Status.Closed;
-	            this.closeChildren();
-	            if(this.mStatus === Status.Closed)
+	            mStatus = Status.Closed;
+	            closeChildren();
+	            if(mStatus === Status.Closed)
 	            {
-	                this.createThreadSummary();
+	                createThreadSummary();
 	            }
 		},
 		
 		createThreadSummary: function()
 		{
-			var summary = new ThreadSummary(this.mMimeType, this.mContent, this.mDateTime, this);
+			var summary = new ThreadSummary(mMimeType, mContent, mDateTime, this);
 			var index = this.mChildren.indexOf(this);
 			if(index !== -1) {
-			    this.mParent.mChildren[index] = summary;
+			    mParent.mChildren[index] = summary;
 			}
 			return summary.toString();
 		},
@@ -217,9 +217,9 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 		closeChildren: function ()
 		{
 		    //checks if this thread has childThreads and prevent them from modification and adding other properties
-	            if (this.mChildren.length >= 1) {
-	                for (var i = 0; i < this.mChildren.length; i++) {
-	                    this.mChildren[i].mStatus = Status.Closed;
+	            if (mChildren.length >= 1) {
+	                for (var i = 0; i < mChildren.length; i++) {
+	                    mChildren[i].mStatus = Status.Closed;
 	                }
 	            }
 		},
@@ -227,12 +227,12 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 	    setLevels: function()
 	    {
 	        //traverses this thread's children
-	        if (this.mChildren.length >= 1) {
-	            for (var i = 0; i < this.mChildren.length; i++) {
-	                this.mChildren[i].setLevels();
+	        if (mChildren.length >= 1) {
+	            for (var i = 0; i < mChildren.length; i++) {
+	                mChildren[i].setLevels();
 	            }
 	        }
-	        this.mLevel = this.getParentThread().mLevel + 1; //sets this thread's level to one more than its parents level
+	        mLevel = getParentThread().mLevel + 1; //sets this thread's level to one more than its parents level
 	    },
 
 	    /**
@@ -244,42 +244,42 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 	            if(newParent !== null)
 	            {
 	                //Remove this thread from its current parent's children array
-	                var index = this.mParent.mChildren.indexOf(this);
+	                var index = mParent.mChildren.indexOf(this);
 	                if(index !== -1) {
-	                        this.mParent.mChildren.splice(index, 1);
+	                        mParent.mChildren.splice(index, 1);
 	                }
 
 	                //Add this thread to its new parent's children array
 	                newParent.mChildren.push(this);
 
 	                //Assign newParent as this thread's parent
-	                this.mParent = newParent;
+	                mParent = newParent;
 
 	                //Assign newParent's status to this thread (e.g. current thread is open, if it is moved to be the child of a thread which is closed then the current thread will also become closed
-	                this.mStatus = newParent.mStatus;
+	                mStatus = newParent.mStatus;
 
 	                //Assign newParent's status to this thread's children and their children, etc.
 	                if(newParent.mStatus !== this.mStatus)
 	                {
 	                    if(newParent.mStatus === Status.Open)
 	                    {
-	                        if(this.mStatus === Status.Closed)
-	                            this.reopenThread();
+	                        if(mStatus === Status.Closed)
+	                            reopenThread();
 	                        else if (this.mStatus === Status.Hidden)
-	                            this.unhideThread();
+	                            unhideThread();
 	                    }
 	                    else if (newParent.mStatus === Status.Closed)
 	                    {
-	                        this.closeThread();
+	                        closeThread();
 	                    }
 	                    else if (newParent.mStatus === Status.Hidden)
 	                    {
-	                        if (this.mStatus === Status.Closed)
-	                            this.reopenThread();
-	                        this.hideThread();
+	                        if (mStatus === Status.Closed)
+	                            reopenThread();
+	                        hideThread();
 	                    }
 	                }
-	                this.setLevels();
+	                setLevels();
 
 	                //The thread was successfully moved
 	                return true;
@@ -477,17 +477,17 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 	    hideThread: function ()
 	    {
 	        //This checks whether the current Thread has children or not
-	        if(this.getChildThreads().length >= 1)
+	        if(getChildThreads().length >= 1)
 	        {
 	            //This for loop iterate through the child Threads and Hide them
-	            for(var i = 0; i < this.mChildren.length ; i += 1)
+	            for(var i = 0; i < mChildren.length ; i += 1)
 	            {
-	                this.mChildren[i].hideThread();
+	                mChildren[i].hideThread();
 	            }
 	        }
 	        //We change the status to Hidden to indicate that this Threads are now hidden,
 	        //so no modification will be done to them
-	        this.mStatus = Status.Hidden;
+	        mStatus = Status.Hidden;
 
 	    },
 
@@ -500,43 +500,43 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 	    {
 
 	        //This checks whether the current Thread has children or not
-	        if(this.getChildThreads().length >= 1)
+	        if(getChildThreads().length >= 1)
 	        {
 	            //This for loop iterate through the child Threads and unHide them
-	            for(var i = 0; i < this.mChildren.length ; i++)
+	            for(var i = 0; i < mChildren.length ; i++)
 	            {
-	                this.mChildren[i].unhideThread();
+	                mChildren[i].unhideThread();
 	            }
 	        }
 	        //We change the status to Open to indicate that this Threads are now Visible,
 	        //and they can be viewed,commented to,e.t.c
-	        this.mStatus = Status.Open;
+	        mStatus = Status.Open;
 	    },
 
 		markPostAsRead: function ()
 		{
 			//check if the post is read. if yes, return.
-			if(this.mStatus === Status.Read)
+			if(mStatus === Status.Read)
 	        	{
 	            		return;
 	        	}
 	        	else
 	        	{
 	            	//else read the post
-	            	this.readPost(this.mUser,this.mID);
+	            	readPost(this.mUser,this.mID);
 	        	}
 			
 		},
 		
 		readPost: function(userid, postid) 
 		{
-	        	this.mUser = userid;
-	        	this.mID = postid;
+	        	mUser = userid;
+	        	mID = postid;
 
 	        	//check if the current user and post exist in the database and change the status to read;
-	        	if (this.mUser === MongoDbUser && this.mID === MongoDbPostId)
+	        	if (mUser === MongoDbUser && mID === MongoDbPostId)
 	        	{
-	            		this.mStatus = Status.Read;
+	            		mStatus = Status.Read;
 	        	}
 
 	    },
@@ -551,9 +551,9 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 			var counter = 0;
 	        var k = 0;
 
-	        for (k; k < (this.mChildren.length); k++){
+	        for (k; k < (mChildren.length); k++){
 	            ++counter;
-	            counter += this.countChildren(this.mChildren[k]);
+	            counter += countChildren(mChildren[k]);
 	        }
 	        return counter;
 		},
@@ -577,7 +577,7 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 	    {
 	        //Martha
 	        //checks if the thread is still inaccessible
-	        if(this.mStatus === Status.Closed) {
+	        if(mStatus === Status.Closed) {
 	            //reopens the current thread
 	            this.unfreeze();
 	        }
