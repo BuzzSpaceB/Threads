@@ -11,19 +11,17 @@
     2. http://mongoosejs.com/docs/
  */
 
-var mongoose = require('mongoose');
-var postModel = require('./Models/posts');
+
+//var postModel = require('./Models/posts');
 var threadModel = require('./Models/threads');
 
-function doPersistence(Schema, mongoose1, _PostType, _Heading, _Content, _MimeType, _User, _Parent, _Level, _Post, _Status, _Children){
+function doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeType, _User, _Parent, _Level, _Post, _Status, _Children){
     //var db = mongoose.createConnection('mongodb://localhost/test');
     //mongoose.connect('mongodb://localhost/test');
     var db = mongoose.connection;
-    mongoose.connect('mongodb://localhost/test');
     db.on('error', console.error.bind(console, 'connection error:'));
     db.on('open', function (callback) {
         // yay!
-        console.log("Testing here");
         // var thisDay = new Date();
         // postModel.collection.insert({
         //     ID: Schema.ObjectId,
@@ -45,13 +43,11 @@ function doPersistence(Schema, mongoose1, _PostType, _Heading, _Content, _MimeTy
             Post: _Post,
             Status: _Status,
             Children: _Children}, function(err, doc) {
-            if(err) console.log("Error inserting new thread record." + err);
-            else console.log("New thread persisted to database.");
         });
     });
     //mongoose.connection.close(function(){
-      //  mongoose.disconnect();
-      //  console.log("Closing database connection...");
+        //mongoose.disconnect();
+        //console.log("Closing database connection...");
     //});
 }
 
