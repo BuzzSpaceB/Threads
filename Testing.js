@@ -28,12 +28,14 @@ exports.testChildThreads = function(test){
     
     Thread.create();
     //submitPost: function (_ID, _User, _PostType, _Heading, _Content, _MimeType)
-    Thread.submitPost();
+    Thread.submitPost(223, 'Pietie', 'Answer', "An Answer", "This is the answer to your question.", "Text");
     /**
      * The following line of code is called an Assertion. It is the "TEST" being performed.
      */
     test.equal(Thread.getHeading(), "Test1", "This should pass.");
-    test.equal(Thread.getChildThreads[0].getContent(), "Answering your question.", "Child thread is not created.");
+    var currentChild = Thread.getChildren();
+    //console.log();
+    test.equal((currentChild[0]).getContent(), "This is the answer to your question.", "Child thread is not created.");
     test.done();
 }
 /*,

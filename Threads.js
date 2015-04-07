@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test');
-var Shema = mongoose.Schema;
+var Schema = mongoose.Schema;
 
 Status =
 {
@@ -93,7 +93,7 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 		},
 
 		getChildren: function(){
-			return mChildren;
+			return this.mChildren;
 		},
 
 		getPostType: function(){
@@ -155,8 +155,10 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 		submitPost: function (_ID, _User, _PostType, _Heading, _Content, _MimeType){
 		      //Jason
 		    var dateCreated = new Date();
-		    var childThread = new Thread(_ID, _User, this, (this.mLevel + 1), _PostType, _Heading, _Content, dateCreated, _MimeType);
-		    this.mChildren.push(childThread);
+            var newObj = require('./threads');
+            var newThread = new newObj(_ID, _User, this, mLevel+1, _PostType, _Heading, _Content, dateCreated, _MimeType);
+		    //var childThread = new Thread(_ID, _User, this, (this.mLevel + 1), _PostType, _Heading, _Content, dateCreated, _MimeType);
+		    this.mChildren.push(newThread);
 		},
 
 		getPost: function ()
