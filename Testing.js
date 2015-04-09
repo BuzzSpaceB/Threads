@@ -100,34 +100,37 @@ exports.testChildThreads = function(test){
         test.equal(returnedObject6[0]["Content"], "Query test 1", "Query threads test 6");
         test.done();
     },
+    */
 
     //test of closeThread()
 
-    Test5: function(test)
+ exports.testCloseThread = function(test)
     {
-        var Obj = new Thread(0, "Martha", 0, 2, "Question", "Test5", "Query test 1", 2, "Text");*/
-        /**
-         * The Equal test function.
-         * equal(currentValue, expectedValue, AssertionMessage);
-         */
-       /* Obj.submitPost(32, "Jason", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
+        var object = require('./threads');
+        var Obj = new Thread(0, "Martha", 0, 2, "Question", "Test5", "Query test 1", 2, "Text");
+
+         //The Equal test function.
+         equal(currentValue, expectedValue, AssertionMessage);
+
+        Obj.submitPost(32, "Jason", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
         Obj.closeThread();
         test.equal(Obj.mStatus, "Closed", "Failure to close a thread.");
         test.equal(Obj.mChildren[0].mStatus, "Closed", "Failure to close child threads.");
         test.done();
 
-    },
+    }
     //test of reopenThread()
-    Test6: function(test)
+     exports.testReopenThread = function(test)
     {
+        var object = require('./threads');
         var Obj = new Thread(0, "Martha", 0, 0, "Question", "Test6", "Query test 1", 2, "Text");
         Obj.closeThread(); //Closing only to test reopening functionality
         test.equal(Obj.mStatus, "Closed", "Failed to close the thread to reopen.");
         Obj.reopenThread();
         test.equal(Obj.mStatus, "Open", "Failed to reopen the thread.");
         test.done();
-    },
-    Test7: function(test){
+    }
+   /* Test7: function(test){
         var dateT = new Date();
         var Obj = new Thread(8394, "Jason", 0, 0, "Answer", "Testing Children", "Testing the child", dateT, "Text");
         Obj.submitPost(8395, "Jason", PostType.Question, "Is it a child?", "This should be a child of object 8394", "Text");
