@@ -472,48 +472,50 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 	          }
 	    },
 
-	    /**
-	     *   This functions hide Threads that the adminstrator doesnt want them
-	     *   to be visible from the other users
-	     **/
-	    hideThread: function ()
-	    {
-	        //This checks whether the current Thread has children or not
-	        if(getChildThreads().length >= 1)
-	        {
-	            //This for loop iterate through the child Threads and Hide them
-	            for(var i = 0; i < mChildren.length ; i += 1)
-	            {
-	                mChildren[i].hideThread();
-	            }
-	        }
-	        //We change the status to Hidden to indicate that this Threads are now hidden,
-	        //so no modification will be done to them
-	        mStatus = Status.Hidden;
+        /**
+         *   This functions hide Threads that the adminstrator doesnt want them
+         *   to be visible from the other users
+         **/
+        hideThread: function ()
+        {
+            //This checks whether the current Thread has children or not
+            if(this.mChildren.length >= 1)
+            {
+                //This for loop iterate through the child Threads and Hide them
+                for(var i = 0; i < this.mChildren.length; i++)
+                {
+                    //this.mChildren[i].hideThread();
+                    this.mChildren[i].mStatus = Status.Hidden;
+                }
+            }
+            //We change the status to Hidden to indicate that this Threads are now hidden,
+            //so no modification will be done to them
+            mStatus = Status.Hidden;
 
-	    },
+        },
 
 	    /**
 	     *   This functions unHide Threads that the adminstrator has Hidden before and
 	     *   now the Adminstrator want them to be visible to the other users
 	     **/
 
-	    unhideThread: function ()
-	    {
+        unhideThread: function ()
+        {
 
-	        //This checks whether the current Thread has children or not
-	        if(getChildThreads().length >= 1)
-	        {
-	            //This for loop iterate through the child Threads and unHide them
-	            for(var i = 0; i < mChildren.length ; i++)
-	            {
-	                mChildren[i].unhideThread();
-	            }
-	        }
-	        //We change the status to Open to indicate that this Threads are now Visible,
-	        //and they can be viewed,commented to,e.t.c
-	        mStatus = Status.Open;
-	    },
+            //This checks whether the current Thread has children or not
+            if(this.mChildren.length >= 1)
+            {
+                //This for loop iterate through the child Threads and unHide them
+                for(var i = 0; i < this.mChildren.length ; i++)
+                {
+                    this.mChildren[i].mStatus = Status.Open;
+                    //this.mChildren[i].unhideThread();
+                }
+            }
+            //We change the status to Open to indicate that this Threads are now Visible,
+            //and they can be viewed,commented to,e.t.c
+            mStatus = Status.Open;
+        },
 
 		markPostAsRead: function ()
 		{
