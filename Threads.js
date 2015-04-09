@@ -188,9 +188,9 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 		unfreeze: function ()
 		{
 	        mStatus = Status.Open;
-			if (mChildren.length >= 1) {
-				for (var i = 0; i < mChildren.length; i++) {
-				    mChildren[i].unfreeze();
+			if (this.mChildren.length >= 1) {
+				for (var i = 0; i < this.mChildren.length; i++) {
+				    this.mChildren[i].unfreeze();
 				}
 			}
 		},
@@ -199,10 +199,10 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 		{
 			//Martha
 	            mStatus = Status.Closed;
-	            closeChildren();
+	            this.closeChildren();
 	            if(mStatus === Status.Closed)
 	            {
-	                createThreadSummary();
+	                this.createThreadSummary();
 	            }
 		},
 		
@@ -219,9 +219,9 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 		closeChildren: function ()
 		{
 		    //checks if this thread has childThreads and prevent them from modification and adding other properties
-	            if (mChildren.length >= 1) {
-	                for (var i = 0; i < mChildren.length; i++) {
-	                    mChildren[i].mStatus = Status.Closed;
+	            if (this.mChildren.length >= 1) {
+	                for (var i = 0; i < this.mChildren.length; i++) {
+	                    this.mChildren[i].mStatus = Status.Closed;
 	                }
 	            }
 		},

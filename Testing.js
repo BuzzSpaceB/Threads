@@ -107,15 +107,16 @@ exports.testChildThreads = function(test){
  exports.testCloseThread = function(test)
     {
         var object = require('./threads');
-        var Obj = new Thread(0, "Martha", 0, 2, "Question", "Test5", "Query test 1", 2, "Text");
+        var Thread = new object(0, "Martha", 0, 2, "Question", "Test5", "Query test 1", 2, "Text");
 
-         //The Equal test function.
-         equal(currentValue, expectedValue, AssertionMessage);
+         Thread.create();
 
-        Obj.submitPost(32, "Jason", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
-        Obj.closeThread();
-        test.equal(Obj.mStatus, "Closed", "Failure to close a thread.");
-        test.equal(Obj.mChildren[0].mStatus, "Closed", "Failure to close child threads.");
+        Thread.submitPost(32, "Jason", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
+        Thread.submitPost(32, "Herman", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
+        Thread.closeThread();
+        test.equal(mStatus, "Closed", "Failure to close a thread.");
+        test.equal(Thread.mChildren[0].mStatus, "Closed", "Failure to close child threads.");
+        test.equal(Thread.mChildren[1].mStatus, "Closed", "Failure to close child threads.");
         test.done();
 
     }
@@ -123,11 +124,13 @@ exports.testChildThreads = function(test){
      exports.testReopenThread = function(test)
     {
         var object = require('./threads');
-        var Obj = new Thread(0, "Martha", 0, 0, "Question", "Test6", "Query test 1", 2, "Text");
-        Obj.closeThread(); //Closing only to test reopening functionality
-        test.equal(Obj.mStatus, "Closed", "Failed to close the thread to reopen.");
-        Obj.reopenThread();
-        test.equal(Obj.mStatus, "Open", "Failed to reopen the thread.");
+        var Thread = new object(0, "Martha", 0, 0, "Question", "Test6", "Query test 1", 2, "Text");
+
+        Thread.create();
+        Thread.closeThread(); //Closing only to test reopening functionality
+        test.equal(mStatus, "Closed", "Failed to close the thread to reopen.");
+        Thread.reopenThread();
+        test.equal(mStatus, "Open", "Failed to reopen the thread.");
         test.done();
     }
    /* Test7: function(test){
