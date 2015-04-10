@@ -537,13 +537,13 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 	        var getfields = require('./Models/threads');
 		var userName;
 		var threadPost;
-		getfields.findOne({User: user}),function(err,user){
+		getfields.findOne({User: user},function(err,user){
 			if(err)
 				return console.error(err);
 			else
 				userName = user;
 			});
-		getfields.findOne({Post: postid}),function(err,post){
+		getfields.findOne({Post: postid},function(err,post){
 			if(err)
 				return console.error(err);
 			else
