@@ -517,31 +517,45 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
             mStatus = Status.Open;
         },
 
-		markPostAsRead: function ()
-		{
-			//check if the post is read. if yes, return.
-			if(mStatus === Status.Read)
-	        	{
-	            		return;
-	        	}
-	        	else
-	        	{
+	markPostAsRead: function ()
+	{
+		//check if the post is read. if yes, return.
+		if(mStatus === Status.Read)
+	        {
+	            	return;
+	        }
+	        else
+	        {
 	            	//else read the post
-	            	readPost(this.mUser,this.mID);
-	        	}
+	           	readPost(this.mUser,this.mID);
+	        }
 			
-		},
+	},
 		
-		readPost: function(userid, postid) 
-		{
-	        	mUser = userid;
-	        	mID = postid;
+	readPost: function(userid, postid) 
+	{
+	        var getfields = require('./Models/threads');
+		var userName;
+		var threadPost;
+		getfields.findOne({User: user}),function(err,user){
+			if(err)
+				return console.error(err);
+			else
+				userName = user;
+			});
+		getfields.findOne({Post: postid}),function(err,post){
+			if(err)
+				return console.error(err);
+			else
+				threadPost = post;
+			});
+		
 
 	        	//check if the current user and post exist in the database and change the status to read;
-	        	if (mUser === MongoDbUser && mID === MongoDbPostId)
-	        	{
-	            		mStatus = Status.Read;
-	        	}
+	        if (mUser === userName && mID === threaPost)
+	        {
+	            	mStatus = Status.Read;
+	        }
 
 	    },
 
