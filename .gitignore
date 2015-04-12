@@ -1,2 +1,13 @@
 *.iml
 .idea/*
+
+# Removing all Node modules
+*.log
+*.pid
+*.seed
+lib-cov
+coverage
+.grunt
+.lock-wscript
+build/Release
+node_modules
