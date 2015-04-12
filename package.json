@@ -29,8 +29,14 @@
       "student_Number": "u13037618"
     },
     {
-      "name": "Group member n",
-      "email": "n@email.com"
+      "name": "Edwin Fullard",
+      "email": "u12048675@tuks.co.za",
+      "student_Number": "u12048675"
+    },
+    {
+      "name": "Sboniso Masilela",
+      "email": "keskor.pro@gmail.com",
+      "student_Number": "u10416260"
     }
   ],
   "dependencies": {
@@ -40,6 +46,7 @@
       "mongoose": "^3.8.25",
       "morgan": "~1.5.1",
       "node-aop": "^0.1.0",
-      "node-cache": "^1.1.0"
+      "node-cache": "^1.1.0",
+      "DatabaseStuff": "git://github.com/BuzzSpaceB/DatabaseStuff#master"
     }
 }

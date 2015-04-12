@@ -13,29 +13,33 @@
 
 
 //var postModel = require('./Models/posts');
-var threadModel = require('./Models/threads');
+//var threadModel = require('./Models/threads');
+var ds = require('DatabaseStuff');
 
 function doPersistence(Schema, mongoose, _PostType, _Heading, _Content, _MimeType, _User, _Parent, _Level, _Post, _Status, _Children){
     //var db = mongoose.createConnection('mongodb://localhost/test');
     //mongoose.connect('mongodb://localhost/test');
+    ds.init(mongoose);
+    var post = ds.models.post;
+    var thread = ds.models.thread;
+
     var db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
     db.on('open', function (callback) {
         // yay!
-        // var thisDay = new Date();
-        // postModel.collection.insert({
-        //     ID: Schema.ObjectId,
-        //     PostType: _PostType,
-        //     Heading: _Heading,
-        //     Content: _Content,
-        //     DateCreated: thisDay,
-        //     MimeType: _MimeType}, function(err, doc) {
-        //         if(err) console.log("Error inserting new post record.");
-        //         else console.log("New post persisted to database.");
-        // });
+         var thisDay = new Date();
+         post.collection.insert({
+             ID: Schema.ObjectId,
+             PostType: _PostType,
+             Heading: _Heading,
+             Content: _Content,
+             DateCreated: thisDay,
+             MimeType: _MimeType}, function(err, doc) {
+                 if(err) console.log("Error inserting new post record.");
+                 else console.log("New post persisted to database.");
+         });
 
-        var thisDay = new Date();
-        threadModel.collection.insert({
+        thread.collection.insert({
             ID: Schema.ObjectId,
             User: _User,
             Parent: _Parent,

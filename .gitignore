@@ -1,5 +1,5 @@
 *.iml
-.idea/*
+.idea
 
 # Removing all Node modules
 *.log
