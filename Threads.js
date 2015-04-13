@@ -1,5 +1,7 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test');
+var ds = require('DatabaseStuff');
+ds.init(mongoose);
+
 var Schema = mongoose.Schema;
 
 Status =
@@ -66,9 +68,9 @@ ThreadSummary.prototype =
 
 
 
-module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mContent, mDateTime, mMimeType){
+module.exports = function(){
 	return{
-		create: function(){
+		create: function(mID, mUser, mParent, mLevel, mPostType, mHeading, mContent, mDateTime, mMimeType){
 			// this.mChildren = [];
 			this.mPost = new Post(mID, mPostType, mHeading, mContent, mDateTime, mMimeType);
 			this.mStatus = Status.Open;
@@ -78,6 +80,73 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 			var ObjectID = Schema.ObjectId;
 	
 			require('./Persistence.js').doPersistence(Schema, mongoose, mPostType, mHeading, mContent, mMimeType, mUser, mParent, mLevel, this.mPost, this.mStatus, this.mChildren);
+		},
+
+		createNewThread: function(mUser, mParent, mLevel, mPostType, mHeading, mContent, mMimeType){
+			var Thread = ds.models.thread;
+
+			if (mParent == null){
+				var level = 0;
+				var newThreadJSON = {
+					"ParentID" : null,
+					"UserID" : mUser,
+					"NumChildren" : 0,
+					"Post" : {
+						"PostType" : mPostType,
+						"Heading" : mHeading,
+						"Content" : mContent,
+						"MIMEType" : mMimeType
+					},
+					"Level" : level,
+					"Closed" : false,
+					"Hidden" : false,
+					"Open" : true
+				};
+				this.postThreadToDatabase(newThreadJSON);
+			}
+			else{
+				Thread.findOne({'_id' : mParent}, function(err, mParent){
+					if (err){
+						console.log("Error: " + err);
+					}
+					else{
+						var parentLevel = mParent.level;
+						var parentID = mParent._id;
+						var level = Number(parentLevel) + 1;
+						var newThreadJSON = {
+							"ParentID" : parentID,
+							"UserID" : mUser,
+							"NumChildren" : 0,
+							"Post" : {
+								"PostType" : mPostType,
+								"Heading" : mHeading,
+								"Content" : mContent,
+								"MIMEType" : mMimeType
+							},
+							"Level" : level,
+							"Closed" : false,
+							"Hidden" : false,
+							"Open" : true
+						};
+						this.postThreadToDatabase(newThreadJSON);
+					}
+				});
+			}
+		},
+
+		postPostToDatabase : function(newThreadJSON){
+
+		},
+
+		postThreadToDatabase : function(JSONDetails){
+			var Thread = ds.models.thread;
+			var newThread = new Thread();
+			newThread.parent_thread_id = JSONDetails.ParentID;
+			newThread.user_id = JSONDetails.UserID;
+			newThread.num_children = JSONDetails.NumChildren;
+			newThread.closed = JSONDetails.Closed;
+			newThread.hidden = JSONDetails.Hidden;
+			newThread.level = JSONDetails.Level;
 		},
 
 		ThreadSummary: function(_MimeType, _Content, _DateTime, _Thread)
