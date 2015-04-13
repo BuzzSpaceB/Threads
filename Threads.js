@@ -3,6 +3,7 @@ var ds = require('DatabaseStuff');
 ds.init(mongoose);
 
 var Schema = mongoose.Schema;
+var postID; //This will be used by postThreadToDatabase() to reference the post in the thread.
 
 Status =
 {
@@ -70,7 +71,7 @@ ThreadSummary.prototype =
 
 module.exports = function(){
 	return{
-		create: function(mID, mUser, mParent, mLevel, mPostType, mHeading, mContent, mDateTime, mMimeType){
+		/*create: function(mID, mUser, mParent, mLevel, mPostType, mHeading, mContent, mDateTime, mMimeType){
 			// this.mChildren = [];
 			this.mPost = new Post(mID, mPostType, mHeading, mContent, mDateTime, mMimeType);
 			this.mStatus = Status.Open;
@@ -80,10 +81,11 @@ module.exports = function(){
 			var ObjectID = Schema.ObjectId;
 	
 			require('./Persistence.js').doPersistence(Schema, mongoose, mPostType, mHeading, mContent, mMimeType, mUser, mParent, mLevel, this.mPost, this.mStatus, this.mChildren);
-		},
+		},*/
 
-		createNewThread: function(mUser, mParent, mLevel, mPostType, mHeading, mContent, mMimeType){
+		createNewThread: function(mUser, mParent, mLevel, mPostType, mHeading, mContent, mMimeType, mSubject){
 			var Thread = ds.models.thread;
+			//var Post = ds.models.post;
 
 			if (mParent == null){
 				var level = 0;
@@ -100,7 +102,8 @@ module.exports = function(){
 					"Level" : level,
 					"Closed" : false,
 					"Hidden" : false,
-					"Open" : true
+					"Open" : true,
+					"Subject" : mSubject
 				};
 				this.postThreadToDatabase(newThreadJSON);
 			}
@@ -126,27 +129,54 @@ module.exports = function(){
 							"Level" : level,
 							"Closed" : false,
 							"Hidden" : false,
-							"Open" : true
+							"Open" : true,
+							"Subject" : mSubject
 						};
+						this.postPostToDatabase(newThreadJSON);
 						this.postThreadToDatabase(newThreadJSON);
 					}
 				});
 			}
 		},
 
-		postPostToDatabase : function(newThreadJSON){
+		postPostToDatabase : function(JSONPost){
+			var Post = ds.models.post;
+			var newPost = new Post();
 
+			newPost.post_id = Schema.ObjectId;
+			postID = newPost.post_id; //For referencing this post in the thread...
+			newPost.title = JSONPost.Post.Heading;
+			newPost.post_type = JSONPost.Post.PostType;
+			newPost.content = JSONPost.Post.Content;
+			newPost.date = new Date();
+			newPost.mime_type = JSONPost.Post.MIMEType;
+			newPost.appraisal_id = "unknown";
+
+			newPost.save(function (error){
+				if (error)
+					console.log("Error: " + error);
+				console.log("Saving: " + JSON.stringify(newPost));
+			});
 		},
 
 		postThreadToDatabase : function(JSONDetails){
 			var Thread = ds.models.thread;
 			var newThread = new Thread();
+			newThread.thread_id = Schema.ObjectId;
 			newThread.parent_thread_id = JSONDetails.ParentID;
 			newThread.user_id = JSONDetails.UserID;
 			newThread.num_children = JSONDetails.NumChildren;
 			newThread.closed = JSONDetails.Closed;
 			newThread.hidden = JSONDetails.Hidden;
 			newThread.level = JSONDetails.Level;
+			newThread.post_id = postID;
+			newThread.subject = JSONDetails.Subject;
+
+			newThread.save(function (error){
+				if (error)
+					console.log("Error: " + error);
+				console.log("Saving: " + JSON.stringify(newThread));
+			});
 		},
 
 		ThreadSummary: function(_MimeType, _Content, _DateTime, _Thread)

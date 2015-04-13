@@ -9,15 +9,14 @@
 }*/
 
 exports.testCreation = function(test){
-//function Test1(test){
 	var object = require('./threads');
-    var Thread = object(0, 'Jason', null, 0, 'Question', 'Test1', "This is a test", new Date(), 'Text');//mID, mUser, mParent, mLevel, mPostType, mHeading, mContent, mDateTime, mMimeType
-    
-    Thread.create();
+    var Thread = object();
+
+    Thread.createNewThread("u13032608", null, 0, "Answer", "Creation Test", "Testing creation of a thread", "Text", "Thread Creation");
     /**
      * The following line of code is called an Assertion. It is the "TEST" being performed.
      */
-    test.equal(Thread.getHeading(), "Test1", "This should pass.");
+    //test.equal(Thread.getHeading(), "Test1", "This should pass.");
     test.done();
 }
 
