@@ -698,6 +698,33 @@ module.exports = function(){
 	            //reopens the current thread
 	            this.unfreeze();
 	        }
-	    }
+	    },
+
+        generateThreads: function (validThread){
+            //console.log("BBB");
+            //Generate those threads
+            var threads = new Array();
+            var amount = Number(Object.keys(validThread).length);
+            var stringifiedJSON = JSON.stringify(validThread);
+            var obj = JSON.parse(stringifiedJSON);
+            for (var i = 0; i < amount; i++){
+                threads[i] = {
+                    heading: obj[i]["subject"],
+                    name: obj[i]["user_id"],
+                    level: obj[i]["level"],
+                    //date: "Tue Apr 07 2015 13:32PM",
+                    date: obj[i]["date"],
+                    post: obj[i]["post_id"],
+                    //spaceName: obj[i]["module_id"],
+                    threadID: obj[i]["_id"],
+                    userID: obj[i]["user_id"],
+                    //profilePick: "profile3.png",
+                    moduleID: obj[i]["module_id"]
+                };
+            }
+            threads = JSON.stringify(threads);
+            threads = JSON.parse(threads);
+            return threads;
+        }
 	};
 }
