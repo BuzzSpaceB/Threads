@@ -1,0 +1,9 @@
+{
+  "name": "Test",
+  "version": "1.0.0",
+  "main": "test.js",
+  "dependencies": {
+    "mongoose": "^4.0.1",
+    "DatabaseStuff": "git://github.com/BuzzSpaceB/DatabaseStuff#master"
+  }
+}

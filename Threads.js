@@ -585,31 +585,6 @@ module.exports = function(mID, mUser, mParent, mLevel, mPostType, mHeading, mCon
 	            //reopens the current thread
 	            this.unfreeze();
 	        }
-	    },
-	    
-	    getThreadCallback: function (parentDetails, parent, req, res)
-	    {
-	    	var Thread = require('../models/thread');
-	    	var stringifiedJSON = JSON.stringify(parentDetails);
-	    	var obj = JSON.parse(stringifiedJSON);
-	    	var childLevel = Number(obj.level);
-	    	var module = obj.module_id;
-	    	//Find the threads on level of the thread for this module whose parent is the thread we navigated to
-	    	Thread.find({'level': childLevel, 'module_id': module, 'parent_thread_id': parent}, function(err, validThread)
-	    	{
-	    		if(err)
-	    			console.log("ERR: " + err);
-	    		else
-	    		{
-	    			var threads = generateThreads(validThread);
-	    			threadCreateCallback(req, res, threads);
-	    		}
-	    	})
-	    },
-	    
-	    threadCreateCallback: function (req, res, threads)
-	    {
-	    	res.render('threads', {title: 'D3', threads: threads, user: req.user, content: 'This is the module code'});
 	    }
 	};
 }
