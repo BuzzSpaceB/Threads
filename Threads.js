@@ -179,6 +179,20 @@ module.exports = function(){
 			});
 		},
 
+		getThreadFromDatabase : function(parent){
+			var Thread = ds.models.thread;
+			Thread.findone({'_id': parent}, function(error, validThread){
+				if (error){
+					console.log("ERROR: " + err);
+				}
+				else{
+					var strJSON = JSON.stringify(validThread);
+					var obj = JSON.parse(strJSON);
+					//getThreadCallback;
+				}
+			});
+		},
+
 		ThreadSummary: function(_MimeType, _Content, _DateTime, _Thread)
 		{
 			this.mMimeType = _MimeType;
@@ -701,30 +715,23 @@ module.exports = function(){
 	    },
 
         generateThreads: function (validThread){
-            //console.log("BBB");
-            //Generate those threads
-            var threads = new Array();
+            var threadsCollection = new Array();
             var amount = Number(Object.keys(validThread).length);
-            var stringifiedJSON = JSON.stringify(validThread);
-            var obj = JSON.parse(stringifiedJSON);
+            var strJSON = JSON.stringify(validThread);
+            var obj = JSON.parse(strJSON);
             for (var i = 0; i < amount; i++){
-                threads[i] = {
+                threadsCollection[i] = {
                     heading: obj[i]["subject"],
                     name: obj[i]["user_id"],
                     level: obj[i]["level"],
-                    //date: "Tue Apr 07 2015 13:32PM",
-                    date: obj[i]["date"],
                     post: obj[i]["post_id"],
-                    //spaceName: obj[i]["module_id"],
                     threadID: obj[i]["_id"],
-                    userID: obj[i]["user_id"],
-                    //profilePick: "profile3.png",
-                    moduleID: obj[i]["module_id"]
+                    userID: obj[i]["user_id"]
                 };
             }
-            threads = JSON.stringify(threads);
-            threads = JSON.parse(threads);
-            return threads;
+            threadsCollection = JSON.stringify(threadsCollection);
+            threadsCollection = JSON.parse(threadsCollection);
+            return threadsCollection;
         }
 	};
 }
