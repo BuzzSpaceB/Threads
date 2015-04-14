@@ -1,3 +1,8 @@
+#Description and use of this module.
+-Hiding of threads
+    Description: ---
+    How to use: ---
+
 # Threads
 Functionality around threads and posts.
 
