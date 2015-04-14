@@ -46,60 +46,65 @@ exports.testChildThreads = function(test){
         test.equal(returnedObject.mContent, "Content Tester", "This should pass.");
         test.equal(returnedObject.mMimeType, "Text", "This should pass.");
         test.done();
-    },
-    //Test of moveThread()
-    Test3: function(test){
-        var myObject1 = new Thread(0, "Herman", 0, 0, "Question", "Test3.1", "Move test", "Today", "Text");
-        var myObject2 = new Thread(1, "Herman", 0, 0, "Question", "Test3.2", "New parent", "Today", "Text");
-        myObject2.submitPost(2, "Herman", "Question", "Test3.3", "Thread to move", "Text");
-        var childObject = myObject2.mChildren[0];
-        childObject.moveThread(myObject1);
-        var returnedObject1 = childObject.getParentThread().getPost();
-        var returnedObject2 = myObject1.mChildren[0].getPost();
-        test.equal(returnedObject1.mPostHeading, "Test3.1", "Move threads test 1.");
-        test.equal(returnedObject2.mPostHeading, "Test3.3", "Move threads test 2.");
-        test.done();
-    },
-    //Test of queryThread()
-    Test4: function(test){
-        var date1 = new Date();
-        var date2 = new Date();
-        var date3 = new Date();
+    },**/
+        //Test of moveThread()
+exports.testMoveThreads = function(test){
+    var object = require('./threads');
+    var Thread1 = object(0, "Herman", 0, 0, "Question", "Test3.1", "Move test", "Today", "Text");
+    var Thread2 = object(1, "Herman", 0, 0, "Question", "Test3.2", "New parent", "Today", "Text");
+    Thread1.create();
+    Thread2.create();
 
-        //"Root" thread to be tested
-        var myObject1 = new Thread(0, "Herman", 0, 2, "Question", "Test4.1", "Query test 1", date2, "Text");
+    Thread2.submitPost(2, "Herman", "Question", "Test3.3", "Thread to move", "Text");
 
-        //Child  of "root" thread
-        myObject1.submitPost(1, "Pete", "Question", "Test4.2", "Query test 2", "Text");
-        //Child  of child of "root" thread
-        myObject1.getChildThreads()[0].submitPost(2, "Joe", "Question", "Test4.3", "Query test 3", "Text");
+    var childThread = (Thread2.getChildThreads())[0];
+    childThread.moveThread(Thread1);
 
-        //userGroup to test with
-        var userGroup = ["Herman", "Pete"];
-        //PhraseGroups to test with
-        var phraseSet1 = ["Query"];
-        var phraseSet2 = ["Query", "1"];
+    var returnedObject1 = childThread.getParentThread().getPost();
+    var returnedObject2 = (Thread1.getChildThreads())[0].getPost();
 
-        var returnedObject1 = myObject1.queryThread(0,0,0,0,0,0);
-        var returnedObject2 = myObject1.queryThread(date1,date3,0,0,0,0);
-        var returnedObject3 = myObject1.queryThread(0,0,4,1,0,0);
-        var returnedObject4 = myObject1.queryThread(0,0,4,0,userGroup,0);
-        var returnedObject5 = myObject1.queryThread(0,0,4,0,0,phraseSet1);
-        var returnedObject6 = myObject1.queryThread(0,0,4,0,0,phraseSet2);
+    test.equal(returnedObject1.mPostHeading, "Test3.1", "Move threads test fail 1.");
+    test.equal(returnedObject2.mPostHeading, "Test3.3", "Move threads test fail 2.");
 
-        test.equal(returnedObject1[0]["Content"], "Query test 1", "Query threads test 1");
-        test.equal(returnedObject2[0]["Content"], "Query test 1", "Query threads test 2");
-        test.equal(returnedObject3[0]["Content"], "Query test 2", "Query threads test 3.1");
-        test.equal(returnedObject3[1]["Content"], "Query test 3", "Query threads test 3.2");
-        test.equal(returnedObject4[0]["Content"], "Query test 1", "Query threads test 4.1");
-	    test.equal(returnedObject4[1]["Content"], "Query test 2", "Query threads test 4.2");
-        test.equal(returnedObject5[0]["Content"], "Query test 1", "Query threads test 5.1");
-	    test.equal(returnedObject5[1]["Content"], "Query test 2", "Query threads test 5.2");
-	    test.equal(returnedObject5[2]["Content"], "Query test 3", "Query threads test 5.3");
-        test.equal(returnedObject6[0]["Content"], "Query test 1", "Query threads test 6");
-        test.done();
-    },
-    */
+    test.done();
+}
+//Test of queryThread()
+exports.testQueryThread = function(test){
+    var object = require('./threads');
+    var date1 = new Date();
+    var date2 = new Date();
+    var date3 = new Date();
+    //"Root" thread to be tested
+    var Thread1 = object(0, "Herman", 0, 2, "Question", "Test4.1", "Query test 1", date2, "Text");
+    Thread1.create();
+
+    //Child  of "root" thread
+    Thread1.submitPost(1, "Pete", "Question", "Test4.2", "Query test 2", "Text");
+    //Child  of child of "root" thread
+    Thread1.getChildThreads()[0].submitPost(2, "Joe", "Question", "Test4.3", "Query test 3", "Text");
+    //userGroup to test with
+    var userGroup = ["Herman", "Pete"];
+    //PhraseGroups to test with
+    var phraseSet1 = ["Query"];
+    var phraseSet2 = ["Query", "1"];
+    var returnedObject1 = Thread1.queryThread(0,0,0,0,0,0);
+    var returnedObject2 = Thread1.queryThread(date1,date3,0,0,0,0);
+    var returnedObject3 = Thread1.queryThread(0,0,4,1,0,0);
+    var returnedObject4 = Thread1.queryThread(0,0,4,0,userGroup,0);
+    var returnedObject5 = Thread1.queryThread(0,0,4,0,0,phraseSet1);
+    var returnedObject6 = Thread1.queryThread(0,0,4,0,0,phraseSet2);
+    test.equal(returnedObject1[0]["Content"], "Query test 1", "Query threads test 1");
+    test.equal(returnedObject2[0]["Content"], "Query test 1", "Query threads test 2");
+    test.equal(returnedObject3[0]["Content"], "Query test 2", "Query threads test 3.1");
+    test.equal(returnedObject3[1]["Content"], "Query test 3", "Query threads test 3.2");
+    test.equal(returnedObject4[0]["Content"], "Query test 1", "Query threads test 4.1");
+    test.equal(returnedObject4[1]["Content"], "Query test 2", "Query threads test 4.2");
+    test.equal(returnedObject5[0]["Content"], "Query test 1", "Query threads test 5.1");
+    test.equal(returnedObject5[1]["Content"], "Query test 2", "Query threads test 5.2");
+    test.equal(returnedObject5[2]["Content"], "Query test 3", "Query threads test 5.3");
+    test.equal(returnedObject6[0]["Content"], "Query test 1", "Query threads test 6");
+    test.done();
+}
 
     //test of closeThread()
 
