@@ -12,7 +12,6 @@ exports.testCreation = function(test){
 	var object = require('./threads');
     var Thread = object();
 
-    //mUser, mParent, mPostType, mHeading, mContent, mMimeType
     Thread.create("u13032608", null, "Question", "Creation", "Hello. This is testing of my module.", "Text");
     /**
      * The following line of code is called an Assertion. It is the "TEST" being performed.
@@ -36,28 +35,20 @@ exports.testChildThreads = function(test){
     test.equal((currentChild[0]).getContent(), "This is the answer to your question.", "Child thread is not created.");
     test.done();
 }
-/*,
 
-    Test2: function(test){
-        var myObject = new Thread(0, "Jason", 0, 0, "Question", "Test2", "Content Tester", "Yesterday", "Text");
-        var returnedObject = myObject.getPost();
-        test.equal(returnedObject.mPostHeading, "Test2", "This should pass.");
-        test.equal(returnedObject.mContent, "Content Tester", "This should pass.");
-        test.equal(returnedObject.mMimeType, "Text", "This should pass.");
-        test.done();
-    },**/
-        //Test of moveThread()
+//Test of moveThread()
 exports.testMoveThreads = function(test){
     var object = require('./threads');
-    var Thread1 = object(0, "Herman", 0, 0, "Question", "Test3.1", "Move test", "Today", "Text");
-    var Thread2 = object(1, "Herman", 0, 0, "Question", "Test3.2", "New parent", "Today", "Text");
-    Thread1.create();
-    Thread2.create();
+    var Thread1 = object();
+    var Thread2 = object();
+    //mUser, mParent, mPostType, mHeading, mContent, mMimeType
+    Thread1.create("Herman", null, "Question", "Test3.1", "Move test", "Text");
+    Thread2.create("Herman", null, "Question", "Test3.2", "New parent", "Text");
 
-    Thread2.submitPost(2, "Herman", "Question", "Test3.3", "Thread to move", "Text");
+    Thread2.submitPost("Herman", "Question", "Test3.3", "Thread to move", "Text");
 
-    var childThread = (Thread2.getChildThreads())[0];
-    childThread.moveThread(Thread1);
+    var childThread = (Thread2.getChildThreads());
+    childThread[0].moveThread(Thread1);
 
     var returnedObject1 = childThread.getParentThread().getPost();
     var returnedObject2 = (Thread1.getChildThreads())[0].getPost();
@@ -70,17 +61,17 @@ exports.testMoveThreads = function(test){
 //Test of queryThread()
 exports.testQueryThread = function(test){
     var object = require('./threads');
+
     var date1 = new Date();
-    var date2 = new Date();
     var date3 = new Date();
     //"Root" thread to be tested
-    var Thread1 = object(0, "Herman", 0, 2, "Question", "Test4.1", "Query test 1", date2, "Text");
-    Thread1.create();
+    var Thread1 = object();
+    Thread1.create("Herman", null, "Question", "Test4.1", "Query test 1", "Text");
 
     //Child  of "root" thread
-    Thread1.submitPost(1, "Pete", "Question", "Test4.2", "Query test 2", "Text");
+    Thread1.submitPost("Pete", "Question", "Test4.2", "Query test 2", "Text");
     //Child  of child of "root" thread
-    Thread1.getChildThreads()[0].submitPost(2, "Joe", "Question", "Test4.3", "Query test 3", "Text");
+    Thread1.getChildThreads()[0].submitPost("Joe", "Question", "Test4.3", "Query test 3", "Text");
     //userGroup to test with
     var userGroup = ["Herman", "Pete"];
     //PhraseGroups to test with
@@ -110,12 +101,12 @@ exports.testQueryThread = function(test){
  exports.testCloseThread = function(test)
     {
         var object = require('./threads');
-        var Thread = new object(0, "Martha", 0, 2, "Question", "Test5", "Query test 1", 2, "Text");
+        var Thread = new object();
 
-         Thread.create();
+         Thread.create("Martha", null, "Question", "Test5", "Query test 1", "Text");
 
-        Thread.submitPost(32, "Jason", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
-        Thread.submitPost(32, "Herman", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
+        Thread.submitPost("Jason", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
+        Thread.submitPost("Herman", "Answer", "Closing of Children", "Testing the closing of child threads.", "Text");
         Thread.closeThread();
         test.equal(mStatus, "Closed", "Failure to close a thread.");
         test.equal(Thread.mChildren[0].mStatus, "Closed", "Failure to close child threads.");
@@ -127,40 +118,27 @@ exports.testQueryThread = function(test){
      exports.testReopenThread = function(test)
     {
         var object = require('./threads');
-        var Thread = new object(0, "Martha", 0, 0, "Question", "Test6", "Query test 1", 2, "Text");
+        var Thread = new object();
 
-        Thread.create();
+        Thread.create("Martha", null, "Question", "Test6", "Query test 1", "Text");
         Thread.closeThread(); //Closing only to test reopening functionality
         test.equal(mStatus, "Closed", "Failed to close the thread to reopen.");
         Thread.reopenThread();
         test.equal(mStatus, "Open", "Failed to reopen the thread.");
         test.done();
     }
-   /* Test7: function(test){
-        var dateT = new Date();
-        var Obj = new Thread(8394, "Jason", 0, 0, "Answer", "Testing Children", "Testing the child", dateT, "Text");
-        Obj.submitPost(8395, "Jason", PostType.Question, "Is it a child?", "This should be a child of object 8394", "Text");
-        var child = Obj.mChildren[0].getPost();
-        test.equal(child.mID, "8395", "This post is not the child of 8394");
-        test.equal(child, Obj.mChildren[0].getPost(), "Not the actual child");
-        test.done();
-    },
-*/
-//Test8:
-
-
 
 exports.testHideThread = function(test)
 {
     //var dateT = new Date();
     var object = require('./threads');
-    var Thread = object(0, 'Sboniso', null, 0, 'Question', 'Test8', "This is a Hiding thread test", new Date(), 'Text');
+    var Thread = object();
 
 
 
-    Thread.create();
-    Thread.submitPost(8001, "Sboniso", "Question", "Is it a child?", "This should be a child of object 8000:1", "Text");
-    Thread.submitPost(8002, "Sboniso", "Question", "Is it a child1?", "This should be a child of object 8000:2", "Text");
+    Thread.create('Sboniso', null, 'Question', 'Test8', "This is a Hiding thread test", 'Text');
+    Thread.submitPost("Sboniso", "Question", "Is it a child?", "This should be a child of object 8000:1", "Text");
+    Thread.submitPost("Sboniso", "Question", "Is it a child1?", "This should be a child of object 8000:2", "Text");
     Thread.hideThread();
 
     test.equal(mStatus, Status.Hidden, "Could not hide the root object.");
@@ -171,15 +149,14 @@ exports.testHideThread = function(test)
 
 exports.testUnhideThread = function(test)
 {
-    //var dateT = new Date();
     var object = require('./threads');
-    var Thread = object(0, 'Sboniso', null, 0, 'Question', 'Test8', "This is a Hiding thread test", new Date(), 'Text');
+    var Thread = object();
 
 
 
-    Thread.create();
-    Thread.submitPost(8001, "Sboniso", "Question", "Is it a child?", "This should be a child of object 8000:1", "Text");
-    Thread.submitPost(8002, "Sboniso", "Question", "Is it a child1?", "This should be a child of object 8000:2", "Text");
+    Thread.create('Sboniso', null, 'Question', 'Test8', "This is a Hiding thread test", 'Text');
+    Thread.submitPost("Sboniso", "Question", "Is it a child?", "This should be a child of object 8000:1", "Text");
+    Thread.submitPost("Sboniso", "Question", "Is it a child1?", "This should be a child of object 8000:2", "Text");
     Thread.unhideThread();
 
     test.equal(mStatus, Status.Open, "Could not hide the root object.");

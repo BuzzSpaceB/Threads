@@ -262,7 +262,7 @@ module.exports = function(){
 
 		getChildThreads: function ()
 		{
-			return mChildren;
+			return this.mChildren;
 		},
 
 	    /**
@@ -294,9 +294,9 @@ module.exports = function(){
 	        
 	    getRoot: function ()
 		{
-		    if (mParent !== null) {
-		        if (mParent !== 0)
-		            (mParent).getRoot();
+		    if (this.mParent !== null) {
+		        if (this.mParent !== 0)
+		            (this.mParent).getRoot();
 		        else
 		            return this;
 		    }
@@ -566,8 +566,8 @@ module.exports = function(){
 	         {
 	              //If current thread does not have a parent thread then set the Parent ID to 0
 	              var parentID = 0;
-	              if (temp.mParent !== 0) {
-	                  parentID = temp.mParent.mID;
+	              if (temp.mParent !== null) {
+	                  //parentID = temp.mParent.mID; mID field is currently temporarily removed
 	              }
 
 	             /**
