@@ -21,7 +21,7 @@ PostType =
 	Information: "Information"
 };
 
-function Post (_ID, _PostType, _Heading, _Content, _DateTime, _MimeType)
+function Post (_PostType, _Heading, _Content, _MimeType)
 {
     /**
         A post will have its own heading for the content it contains.
@@ -35,11 +35,11 @@ function Post (_ID, _PostType, _Heading, _Content, _DateTime, _MimeType)
        ||                 | |
        ||_________________| |
      */
-	this.mID = _ID;
+	this.mID = Schema.ObjectId;
  	this.mPostHeading = _Heading;
 	this.mPostType = _PostType;
 	this.mContent = _Content;
-	this.mDateTime = _DateTime;
+	this.mDateTime = new Date();
 	this.mMimeType = _MimeType;
 }
 
@@ -71,17 +71,26 @@ ThreadSummary.prototype =
 
 module.exports = function(){
 	return{
-		/*create: function(mID, mUser, mParent, mLevel, mPostType, mHeading, mContent, mDateTime, mMimeType){
-			// this.mChildren = [];
-			this.mPost = new Post(mID, mPostType, mHeading, mContent, mDateTime, mMimeType);
+		create: function(mUser, mParent, mPostType, mHeading, mContent, mMimeType){
+			this.mPost = new Post(mPostType, mHeading, mContent, mMimeType);
 			this.mStatus = Status.Open;
 			this.mChildren = [];
-			var mongoose = require('mongoose');
-			var Schema = mongoose.Schema;
-			var ObjectID = Schema.ObjectId;
+			if (mParent){
+				this.mLevel = mParent.mLevel + 1;
+				this.mParent = mParent;
+			}
+			else {
+				this.mLevel = 0;
+				this.mParent = null;
+			}
+
+			return this;
+			//var mongoose = require('mongoose');
+			//var Schema = mongoose.Schema;
+			//var ObjectID = Schema.ObjectId;
 	
-			require('./Persistence.js').doPersistence(Schema, mongoose, mPostType, mHeading, mContent, mMimeType, mUser, mParent, mLevel, this.mPost, this.mStatus, this.mChildren);
-		},*/
+			//require('./Persistence.js').doPersistence(Schema, mongoose, mPostType, mHeading, mContent, mMimeType, mUser, mParent, mLevel, this.mPost, this.mStatus, this.mChildren);
+		},
 
 		createNewThread: function(mUser, mParent, mLevel, mPostType, mHeading, mContent, mMimeType, mSubject){
 			var Thread = ds.models.thread;
@@ -214,11 +223,11 @@ module.exports = function(){
 		},
 
 		getHeading: function(){
-			return mHeading;
+			return this.mPost.mPostHeading;
 		},
 
 		getContent: function(){
-			return mContent;
+			return this.mPost.mContent;
 		},
 
 		getDateTime: function(){
@@ -265,18 +274,17 @@ module.exports = function(){
 	     * @param _Content - The text content of the post in the new thread.
 	     * @param _MimeType - Describes the content syntax of the new post content.
 	     */
-		submitPost: function (_ID, _User, _PostType, _Heading, _Content, _MimeType){
+		submitPost: function (_User, _PostType, _Heading, _Content, _MimeType){
 		      //Jason
-		    var dateCreated = new Date();
             var newObj = require('./threads');
-            var newThread = new newObj(_ID, _User, this, mLevel+1, _PostType, _Heading, _Content, dateCreated, _MimeType);
-		    //var childThread = new Thread(_ID, _User, this, (this.mLevel + 1), _PostType, _Heading, _Content, dateCreated, _MimeType);
-		    this.mChildren.push(newThread);
+            var newThread = new newObj();
+		    var childThread = newThread.create(_User, this, _PostType, _Heading, _Content, _MimeType);
+		    this.mChildren.push(childThread);
 		},
 
 		getPost: function ()
 		{
-			return mPost;
+			return this.mPost;
 		},
 
 		getParentThread: function ()

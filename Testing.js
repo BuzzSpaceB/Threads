@@ -12,28 +12,27 @@ exports.testCreation = function(test){
 	var object = require('./threads');
     var Thread = object();
 
-    Thread.createNewThread("u13032608", null, 0, "Answer", "Creation Test", "Testing creation of a thread", "Text", "Thread Creation");
+    //mUser, mParent, mPostType, mHeading, mContent, mMimeType
+    Thread.create("u13032608", null, "Question", "Creation", "Hello. This is testing of my module.", "Text");
     /**
      * The following line of code is called an Assertion. It is the "TEST" being performed.
      */
-    //test.equal(Thread.getHeading(), "Test1", "This should pass.");
+    test.equal(Thread.getHeading(), "Creation", "Failed in creating new thread.");
+    test.equal(Thread.getContent(), "Hello. This is testing of my module.", "Failed to set Content in Post");
     test.done();
 }
 
 exports.testChildThreads = function(test){
     var object = require('./threads');
-    var Thread = object(0, 'Jason', null, 0, 'Question', 'Test1', "This is a test", new Date(), 'Text');//mID, mUser, mParent, mLevel, mPostType, mHeading, mContent, mDateTime, mMimeType
-    //var newThread = object(223, 'Pietie', Thread.getParentThread(), 0, 'Answer', 'Test2', "This is a test 2", new Date(), 'Text');
+    var Thread = object();
     
-    Thread.create();
-    //submitPost: function (_ID, _User, _PostType, _Heading, _Content, _MimeType)
-    Thread.submitPost(223, 'Pietie', 'Answer', "An Answer", "This is the answer to your question.", "Text");
+    Thread.create("u13032608", null, "Question", "Creation1", "\<h1\>Hello.\</h1\> This is testing of my module1.", "HTML");
+    Thread.submitPost('Pietie', 'Answer', "An Answer", "This is the answer to your question.", "Text");
     /**
      * The following line of code is called an Assertion. It is the "TEST" being performed.
      */
-    test.equal(Thread.getHeading(), "Test1", "This should pass.");
+    test.equal(Thread.getHeading(), "Creation1", "Creation of parent thread failed.");
     var currentChild = Thread.getChildren();
-    //console.log();
     test.equal((currentChild[0]).getContent(), "This is the answer to your question.", "Child thread is not created.");
     test.done();
 }
