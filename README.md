@@ -83,6 +83,28 @@ The function markPostAsRead is used to mark a post to indicate that it has been 
 It passes the userid and postid as parameters and use them to check if the current logged in user and the specified post exist  in the database. If they do, it changes the status of the specified post to read.
 
 
+### hideThread()
+	Description:
+	    The function hideThread() is used to hide threads,it doesn't take any parameters.
+		hideThread() ,basically the selected thread nodes and all its descendant nodes will be marked as hidden
+		it changes the status to hidden,then based on the interface,the top level team will decide if hidden threads
+		should show as inactive or not show at all
+	How to use:
+	    To hideThreads you must call hideThread().
+
+
+### unhideThread()
+	Description:
+	    The function unhideThread() is used to unhide threads,it doesn't take any parameters.
+		unhideThread() ,basically the selected thread nodes and all its descendant nodes will be marked as unhidden
+		it changes the status to unhidden,then based on the interface,once they are unhidden they will show as active in the page
+	How to use:
+	    To unhideThreads you must call unhideThread().
+
+		
+
+
+
 # Threads
 Functionality around threads and posts.
 
