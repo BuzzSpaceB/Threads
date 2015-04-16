@@ -230,10 +230,11 @@ module.exports = function(){
 			return this.mMimeType;
 		},
 
-		getChildThreads: function ()
+	/*	getChildThreads: function ()
 		{
 			return this.mChildren;
 		},
+		*/
 
 	    /**
 	     * Creates a new thread as a child of the current thread.
@@ -710,6 +711,36 @@ module.exports = function(){
             threadsCollection = JSON.stringify(threadsCollection);
             threadsCollection = JSON.parse(threadsCollection);
             return threadsCollection;
+        },
+
+        getChildThreads: function (module, parent, req, res, threadCreateCallback)
+        {
+            console.log("AAAA");
+            var Thread = require('../models/thread');
+            //If no parent, just find all the level 1 threads
+            if(parent == null)
+            {
+                //Find all the threads on level 1
+                Thread.find({'level':1}, function (err, validThread)
+                {
+                    if(err)
+                    {
+                        console.log("ERR: " + err);
+                    }
+
+                    else
+                    {
+                        var threads = generateThreads(validThread);
+                        threadCreateCallback(req, res, threads);
+                    }
+                });
+            }
+            else
+            {
+                getThreadFromDatabase(parent, req, res);
+            }
+
         }
+
 	};
 }
