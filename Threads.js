@@ -3,7 +3,6 @@ var ds = require('DatabaseStuff');
 ds.init(mongoose);
 
 var Schema = mongoose.Schema;
-var postID; //This will be used by postThreadToDatabase() to reference the post in the thread.
 
 Status =
 {
@@ -86,11 +85,6 @@ module.exports = function(){
 			this.createNewThread(mUser, mParent, this.mLevel, mPostType, mHeading, mContent, mMimeType, "Subject:");
 
 			return this;
-			//var mongoose = require('mongoose');
-			//var Schema = mongoose.Schema;
-			//var ObjectID = Schema.ObjectId;
-	
-			//require('./Persistence.js').doPersistence(Schema, mongoose, mPostType, mHeading, mContent, mMimeType, mUser, mParent, mLevel, this.mPost, this.mStatus, this.mChildren);
 		},
 
 		createNewThread: function(mUser, mParent, mLevel, mPostType, mHeading, mContent, mMimeType, mSubject){
@@ -207,9 +201,9 @@ module.exports = function(){
 			this.mDateTime = _DateTime;
 			this.mThread = _Thread;
 		},
-		//Getters  _ID, _PostType, _Heading, _Content, _DateTime, _MimeType
+
 		getStatus: function(){
-			return mStatus;
+			return this.mStatus;
 		},
 
 		getChildren: function(){
@@ -217,7 +211,7 @@ module.exports = function(){
 		},
 
 		getPostType: function(){
-			return mPostType;
+			return this.mPostType;
 		},
 
 		getHeading: function(){
@@ -229,34 +223,12 @@ module.exports = function(){
 		},
 
 		getDateTime: function(){
-			return mDateTime;
+			return this.mDateTime;
 		},
 
 		getMimeType: function(){
-			return mMimeType;
+			return this.mMimeType;
 		},
-
-		// Post: function(_ID, _PostType, _Heading, _Content, _DateTime, _MimeType)
-		// {
-		//     *
-		//         A post will have its own heading for the content it contains.
-		//         This is in addition to the thread heading/description.
-		//        |Thread              |
-		//        ||=================| |
-		//        ||Post Heading     | |
-		//        ||=================| |
-		//        ||                 | |
-		//        ||  text content   | |
-		//        ||                 | |
-		//        ||_________________| |
-		     
-		// 	this.mID = _ID;
-		//  	this.mPostHeading = _Heading;
-		// 	this.mPostType = _PostType;
-		// 	this.mContent = _Content;
-		// 	this.mDateTime = _DateTime;
-		// 	this.mMimeType = _MimeType;
-		// },
 
 		getChildThreads: function ()
 		{
@@ -653,7 +625,7 @@ module.exports = function(){
 		
 	readPost: function(userid, postid) 
 	{
-	        var getfields = require('./Models/threads');
+		var getfields = ds.models.thread;
 		var userName;
 		var threadPost;
 		getfields.findOne({User: user},function(err,user){
