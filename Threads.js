@@ -83,7 +83,7 @@ module.exports = function(){
 				this.mLevel = 0;
 				this.mParent = null;
 			}
-			this.createNewThread(mUser, mParent, this.mLevel, mPostType, mHeading, mContent, mMimeType, "Subject:");
+			this.createNewThread(mUser, mParent, this.mLevel, mPostType, mHeading, mContent, mMimeType, mHeading);
 
 			return this;
 		},
