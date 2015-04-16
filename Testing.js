@@ -50,11 +50,11 @@ exports.testMoveThreads = function(test){
     var childThread = (Thread2.getChildren());
     childThread[0].moveThread(Thread1);
 
-    var returnedObject1 = childThread.getParentThread().getPost();
-    var returnedObject2 = (Thread1.getChildren())[0].getPost();
+    //var returnedObject1 = childThread[0].getParentThread().getPost();
+    var returnedObject = (Thread1.getChildren())[0].getPost();
 
-    test.equal(returnedObject1.mPostHeading, "Test3.1", "Move threads test fail 1.");
-    test.equal(returnedObject2.mPostHeading, "Test3.3", "Move threads test fail 2.");
+    test.equal(Thread2.getChildren().length, 0, "Move threads test fail 1.");
+    test.equal(returnedObject.mPostHeading, "Test3.3", "Move threads test fail 2.");
 
     test.done();
 }
