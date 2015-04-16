@@ -58,6 +58,29 @@
 		*	        Level:  The depth level of the current thread in the main tree};
 		**/
 
+#Closing of thread:
+
+The function closeThread is used to close thread and its children. First, it closes the children making them inaccessible which prevents a user to add to the discussion or create a new post on the thread 
+children. It then closes their parent. After closing the parent, it changes the status to closed and create a summary that states the contents, mime type, the date and time the thread was created. Only  
+administrator is authorized to close a thread.
+
+#How createSummary() works:
+
+It creates a summary object and append it on the closed parent thread as a child thread.
+
+#Reopening of thread:
+
+The function reopenThread is used to open thread and allowing modification to that thread. It calls unfreeze() to accomplish the task. But first it test if the thread is closed and calls unfreeze(). Unfreeze() function basically change the status of the current thread and its children to open. Only administrator is authorized to reopen a thread.
+
+#Mark post as read:
+
+The function markPostAsRead is used to mark a post to indicate that it has been viewed before by the current logged in user. It checks if a post has been read,then it returns. Otherwise it calls a readPost() function to read the post.
+
+#How readPost() works:
+
+It passes the userid and postid as parameters and use them to check if the current logged in user and the specified post exist  in the database. If they do, it changes the status of the specified post to read.
+
+
 # Threads
 Functionality around threads and posts.
 
