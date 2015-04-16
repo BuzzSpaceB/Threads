@@ -188,7 +188,7 @@ module.exports = function(){
 			});
 		},
 
-		getThreadFromDatabase : function(parent){
+		getThreadFromDatabase : function(parent,req,res){
 			var Thread = ds.models.thread;
 			Thread.findone({'_id': parent}, function(error, validThread){
 				if (error){
@@ -197,7 +197,7 @@ module.exports = function(){
 				else{
 					var strJSON = JSON.stringify(validThread);
 					var obj = JSON.parse(strJSON);
-					//getThreadCallback;
+					getThreadCallback(obj,req,res);
 				}
 			});
 		},
