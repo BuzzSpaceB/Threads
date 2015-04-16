@@ -1,6 +1,6 @@
 {
   "private": true,
-  "main": "Threads.js",
+  "main": "threads.js",
   "name": "Threads",
   "description": "Creates and modifies threads and posts in the Buzz System.",
   "version": "0.0.1",
