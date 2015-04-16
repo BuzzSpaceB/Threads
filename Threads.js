@@ -83,6 +83,7 @@ module.exports = function(){
 				this.mLevel = 0;
 				this.mParent = null;
 			}
+			this.createNewThread(mUser, mParent, this.mLevel, mPostType, mHeading, mContent, mMimeType, "Subject:");
 
 			return this;
 			//var mongoose = require('mongoose');
@@ -114,7 +115,7 @@ module.exports = function(){
 					"Open" : true,
 					"Subject" : mSubject
 				};
-				this.postThreadToDatabase(newThreadJSON);
+				this.postPostToDatabase(newThreadJSON, newThreadJSON);
 			}
 			else{
 				Thread.findOne({'_id' : mParent}, function(err, mParent){
@@ -141,50 +142,47 @@ module.exports = function(){
 							"Open" : true,
 							"Subject" : mSubject
 						};
-						this.postPostToDatabase(newThreadJSON);
-						this.postThreadToDatabase(newThreadJSON);
+						this.postPostToDatabase(newThreadJSON, newThreadJSON);
 					}
 				});
 			}
 		},
 
-		postPostToDatabase : function(JSONPost){
+		postPostToDatabase : function(JSONPost, JSONDetails){
 			var Post = ds.models.post;
-			var newPost = new Post();
+			var Thread = ds.models.thread;
 
-			newPost.post_id = Schema.ObjectId;
-			postID = newPost.post_id; //For referencing this post in the thread...
+			var newPost = new Post();
 			newPost.title = JSONPost.Post.Heading;
 			newPost.post_type = JSONPost.Post.PostType;
 			newPost.content = JSONPost.Post.Content;
 			newPost.date = new Date();
 			newPost.mime_type = JSONPost.Post.MIMEType;
-			newPost.appraisal_id = "unknown";
+			newPost.appraisal_id = "0";
 
-			newPost.save(function (error){
+			newPost.save(function (error, thePost){
 				if (error)
 					console.log("Error: " + error);
-				console.log("Saving: " + JSON.stringify(newPost));
-			});
-		},
+				else {
+					console.log("Saving: " + JSON.stringify(newPost));
+					var newThread = new Thread();
+					newThread.thread_id = Schema.ObjectId;
+					newThread.module_id = "COS301";
+					newThread.parent_thread_id = JSONDetails.ParentID;
+					newThread.user_id = JSONDetails.UserID;
+					newThread.num_children = JSONDetails.NumChildren;
+					newThread.closed = JSONDetails.Closed;
+					newThread.hidden = JSONDetails.Hidden;
+					newThread.level = JSONDetails.Level;
+					newThread.post_id = thePost._id;
+					newThread.subject = JSONDetails.Subject;
 
-		postThreadToDatabase : function(JSONDetails){
-			var Thread = ds.models.thread;
-			var newThread = new Thread();
-			newThread.thread_id = Schema.ObjectId;
-			newThread.parent_thread_id = JSONDetails.ParentID;
-			newThread.user_id = JSONDetails.UserID;
-			newThread.num_children = JSONDetails.NumChildren;
-			newThread.closed = JSONDetails.Closed;
-			newThread.hidden = JSONDetails.Hidden;
-			newThread.level = JSONDetails.Level;
-			newThread.post_id = postID;
-			newThread.subject = JSONDetails.Subject;
-
-			newThread.save(function (error){
-				if (error)
-					console.log("Error: " + error);
-				console.log("Saving: " + JSON.stringify(newThread));
+					newThread.save(function (error){
+						if (error)
+							console.log("Error: " + error);
+						console.log("Saving: " + JSON.stringify(newThread));
+					});
+				}
 			});
 		},
 
@@ -289,7 +287,7 @@ module.exports = function(){
 
 		getParentThread: function ()
 		{
-			return mParent;
+			return this.mParent;
 		},
 	        
 	    getRoot: function ()
