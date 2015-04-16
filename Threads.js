@@ -71,6 +71,7 @@ ThreadSummary.prototype =
 module.exports = function(){
 	return{
 		create: function(mUser, mParent, mPostType, mHeading, mContent, mMimeType){
+            this.mUser = mUser;
 			this.mPost = new Post(mPostType, mHeading, mContent, mMimeType);
 			this.mStatus = Status.Open;
 			this.mChildren = [];
@@ -300,7 +301,7 @@ module.exports = function(){
 		
 		createThreadSummary: function()
 		{
-			var summary = new ThreadSummary(mMimeType, mContent, mDateTime, this);
+			var summary = new ThreadSummary(this.mPost.mMimeType, this.mPost.mContent, this.mPost.mDateTime, this);
 			var index = this.mChildren.indexOf(this);
 			if(index !== -1) {
 			    mParent.mChildren[index] = summary;
@@ -321,12 +322,12 @@ module.exports = function(){
 	    setLevels: function()
 	    {
 	        //traverses this thread's children
-	        if (mChildren.length >= 1) {
-	            for (var i = 0; i < mChildren.length; i++) {
-	                mChildren[i].setLevels();
+	        if (this.mChildren.length >= 1) {
+	            for (var i = 0; i < this.mChildren.length; i++) {
+	                this.mChildren[i].setLevels();
 	            }
 	        }
-	        mLevel = getParentThread().mLevel + 1; //sets this thread's level to one more than its parents level
+	        mLevel = this.getParentThread().mLevel + 1; //sets this thread's level to one more than its parents level
 	    },
 
 	    /**
@@ -338,26 +339,26 @@ module.exports = function(){
 	            if(newParent !== null)
 	            {
 	                //Remove this thread from its current parent's children array
-	                var index = mParent.mChildren.indexOf(this);
+	                var index = this.mParent.mChildren.indexOf(this);
 	                if(index !== -1) {
-	                        mParent.mChildren.splice(index, 1);
+	                        this.mParent.mChildren.splice(index, 1);
 	                }
 
 	                //Add this thread to its new parent's children array
 	                newParent.mChildren.push(this);
 
 	                //Assign newParent as this thread's parent
-	                mParent = newParent;
+                    this.mParent = newParent;
 
 	                //Assign newParent's status to this thread (e.g. current thread is open, if it is moved to be the child of a thread which is closed then the current thread will also become closed
-	                mStatus = newParent.mStatus;
+                    this.mStatus = newParent.mStatus;
 
 	                //Assign newParent's status to this thread's children and their children, etc.
 	                if(newParent.mStatus !== this.mStatus)
 	                {
 	                    if(newParent.mStatus === Status.Open)
 	                    {
-	                        if(mStatus === Status.Closed)
+	                        if(this.mStatus === Status.Closed)
 	                            reopenThread();
 	                        else if (this.mStatus === Status.Hidden)
 	                            unhideThread();
@@ -368,12 +369,12 @@ module.exports = function(){
 	                    }
 	                    else if (newParent.mStatus === Status.Hidden)
 	                    {
-	                        if (mStatus === Status.Closed)
+	                        if (this.mStatus === Status.Closed)
 	                            reopenThread();
 	                        hideThread();
 	                    }
 	                }
-	                setLevels();
+                    this.setLevels();
 
 	                //The thread was successfully moved
 	                return true;
@@ -486,11 +487,11 @@ module.exports = function(){
 	        }
 
 	        //If the current thread has children
-	        if(typeof temp.mChildren !== 'undefined' && temp.getChildThreads().length > 0) {
+	        if(typeof temp.mChildren !== 'undefined' && temp.getChildren().length > 0) {
 	            //For each of temp threads children
 	            for (var i = 0; i < temp.mChildren.length; i += 1) {
 	                //Call queryThreadRecursive again for each of the current thread's children
-	                temp.queryThreadRecursive(answer, temp.getChildThreads()[i], count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
+	                temp.queryThreadRecursive(answer, temp.getChildren()[i], count, startDateTime, endDateTime, maxLevel, minLevel, userGroup, phraseSet);
 	            }
 
 	            //Once the entire tree has been traversed we return the array of queryInfo objects as an answer.

@@ -47,11 +47,11 @@ exports.testMoveThreads = function(test){
 
     Thread2.submitPost("Herman", "Question", "Test3.3", "Thread to move", "Text");
 
-    var childThread = (Thread2.getChildThreads());
+    var childThread = (Thread2.getChildren());
     childThread[0].moveThread(Thread1);
 
     var returnedObject1 = childThread.getParentThread().getPost();
-    var returnedObject2 = (Thread1.getChildThreads())[0].getPost();
+    var returnedObject2 = (Thread1.getChildren())[0].getPost();
 
     test.equal(returnedObject1.mPostHeading, "Test3.1", "Move threads test fail 1.");
     test.equal(returnedObject2.mPostHeading, "Test3.3", "Move threads test fail 2.");
@@ -71,7 +71,7 @@ exports.testQueryThread = function(test){
     //Child  of "root" thread
     Thread1.submitPost("Pete", "Question", "Test4.2", "Query test 2", "Text");
     //Child  of child of "root" thread
-    Thread1.getChildThreads()[0].submitPost("Joe", "Question", "Test4.3", "Query test 3", "Text");
+    Thread1.getChildren()[0].submitPost("Joe", "Question", "Test4.3", "Query test 3", "Text");
     //userGroup to test with
     var userGroup = ["Herman", "Pete"];
     //PhraseGroups to test with
