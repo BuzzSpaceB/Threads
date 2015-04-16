@@ -78,7 +78,7 @@ The function reopenThread is used to open thread and allowing modification to th
 
 The function markPostAsRead is used to mark a post to indicate that it has been viewed before by the current logged in user. It checks if a post has been read,then it returns. Otherwise it calls a readPost() function to read the post.
 
-##How readPost() works:
+###How readPost() works:
 
 It passes the userid and postid as parameters and use them to check if the current logged in user and the specified post exist  in the database. If they do, it changes the status of the specified post to read.
 
