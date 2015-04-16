@@ -1,20 +1,21 @@
 #Description and use of this module.
--Hiding of threads
-    Description: ---
-    How to use: ---
--Moving of threads
-	Description: The function moveThread is used to move a thread to be the child thread of a specified thread. 
-	All of the moving thread's children will move with the thread.
+
+###Moving of threads
+	Description:
+	    The function moveThread is used to move a thread to be the child thread of a specified thread.
+	    All of the moving thread's children will move with the thread.
 		moveThread first checks if the parameter for the new parent thread is not null (if it is null the function returns false). It then removes the moving thread from its current parent's list of children threads.
 		moveThread then adds the moving thread to its new parent's list of child threads. 
 		The new parent thread is then assigned as the moving thread's parent thread.
 		The moving thread then sets its status to match its new parent's status, after which it similarly sets all of its own children threads' statuses.
 		Lastly a helper function setLevels() is called to set the moving thread (and its children's) new levels as they are after having moved.
-	How to use: The thread to be moved must call moveThread().
+	How to use:
+	    The thread to be moved must call moveThread().
 		It receives one parameter: a reference to the desired new parent node to which the moving thread must move (i.e. become one of its children).
 		It returns one result: "true" if the move was succesful or "false" if it was unsuccessful.
--Querying of threads
-	Description: The function queryThread() is used to query threads according to certain parameters. 
+###Querying of threads
+	Description:
+	    The function queryThread() is used to query threads according to certain parameters.
 		queryThread() checks if values have been assigned to the maxLevel and minLevel parametersand if not assigns default values. 
 		It then calls the recursive function queryThreadRecursive() to further analyze the request.
 		queryThreadRecursive() first checks if must assign default values to the parameters startDateTime, endDateTime, userGroup and phraseSet.
@@ -23,7 +24,8 @@
 		queryThreadRecursive() traverses the current thread's children and repeats the above process.
 		addToQueryAnswer() does one final check to see if the current thread falls within the range set by the phraseSet parameter and then (if it does) 
 		adds the current thread to an answer array to be returned once queryThreadRecursive() has finished traversing all relevant threads.
-	How to use: The thread to be queried must call queryThread().
+	How to use:
+	    The thread to be queried must call queryThread().
 		It receives six parameters: 
 			startDateTime -  Restrict returned posts to be after this time stamp. Default is the time stamp of the root post in the Buzz space.
 	    		endDateTime -  Restrict returned posts to be before this time stamp. If unspecified all posts are returned.
