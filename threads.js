@@ -74,6 +74,7 @@ module.exports = function(){
             this.mUser = mUser;
 			this.mPost = new Post(mPostType, mHeading, mContent, mMimeType);
 			this.mStatus = Status.Open;
+			this.mDateTime = new Date();
 			this.mChildren = [];
 			if (mParent){
 				this.mLevel = mParent.mLevel + 1;
@@ -228,7 +229,7 @@ module.exports = function(){
 		},
 
 		getMimeType: function(){
-			return this.mMimeType;
+			return this.mPost.mMimeType;
 		},
 
 	/*	getChildThreads: function ()
